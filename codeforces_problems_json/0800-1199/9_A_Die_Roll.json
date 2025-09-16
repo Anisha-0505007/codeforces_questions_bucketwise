@@ -8,6 +8,442 @@
     "math",
     "probabilities"
   ],
+  
+  "problemName": "A. Die Roll",
+  "timeLimit": "1 second per test",
+  "memoryLimit": "64 megabytes per test",
+  "problemStatement": {
+    "narrative": "Yakko, Wakko and Dot, world-famous animaniacs, decided to rest from acting in cartoons, and take a leave to travel a bit. Yakko dreamt to go to Pennsylvania, his Motherland and the Motherland of his ancestors. Wakko thought about Tasmania, its beaches, sun and sea. Dot chose Transylvania as the most mysterious and unpredictable place. But to their great regret, the leave turned to be very short, so it will be enough to visit one of the three above named places. That's why Yakko, as the cleverest, came up with a truly genius idea: let each of the three roll an ordinary six-sided die, and the one with the highest amount of points will be the winner, and will take the other two to the place of his/her dreams.",
+    "task": "Yakko thrown a die and got Y points, Wakko — W points. It was Dot's turn. But she didn't hurry. Dot wanted to know for sure what were her chances to visit Transylvania.",
+    "conditions": [
+      "It is known that Yakko and Wakko are true gentlemen, that's why if they have the same amount of points with Dot, they will let Dot win."
+    ]
+  },
+  "inputSpecification": {
+    "description": "The only line of the input file contains two natural numbers Y and W — the results of Yakko's and Wakko's die rolls."
+  },
+  "outputSpecification": {
+    "description": "Output the required probability in the form of an irreducible fraction in format «A/B», where A — the numerator, and B — the denominator.",
+    "specialCases": [
+      {
+        "condition": "The required probability equals to zero",
+        "output": "0/1"
+      },
+      {
+        "condition": "The required probability equals to 1",
+        "output": "1/1"
+      }
+    ]
+  },
+  "examples": [
+    {
+      "input": "4 2",
+      "output": "1/2",
+      "note": "Dot will go to Transylvania, if she is lucky to roll 4, 5 or 6 points."
+    },
+    
+
+  {
+    "id": 1,
+    "title": "Minimum values for both rolls (Y=1, W=1)",
+    "tags": ["min", "edge", "all-equal"],
+    "input": "1 1\n",
+    "expected_output": "1/1\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the absolute minimum inputs. Dot wins with any roll (1-6), so the probability is 6/6, which simplifies to 1/1.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 2,
+    "title": "Symmetric minimum values (Y=1, W=2)",
+    "tags": ["min", "edge"],
+    "input": "1 2\n",
+    "expected_output": "5/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests a case where max(Y, W) = 2. The probability 5/6 is irreducible.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 3,
+    "title": "Symmetric minimum values (Y=2, W=1)",
+    "tags": ["min", "edge"],
+    "input": "2 1\n",
+    "expected_output": "5/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Ensures the solution correctly uses max(Y, W) and is not dependent on input order. The result is the same as for '1 2'.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 4,
+    "title": "Both rolls are equal to 2",
+    "tags": ["all-equal"],
+    "input": "2 2\n",
+    "expected_output": "5/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the case where max(Y, W) = 2 and Y=W. The probability 5/6 is irreducible.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 5,
+    "title": "Max roll is 3, requires reduction (Y=1, W=3)",
+    "tags": [],
+    "input": "1 3\n",
+    "expected_output": "2/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests when max(Y, W) = 3. Favorable outcomes are 4, so probability is 4/6, which must be reduced to 2/3.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 6,
+    "title": "Max roll is 3, requires reduction (Y=2, W=3)",
+    "tags": [],
+    "input": "2 3\n",
+    "expected_output": "2/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Another case where max(Y, W) = 3. Tests the reduction of 4/6 to 2/3.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 7,
+    "title": "Max roll is 3, symmetric case (Y=3, W=1)",
+    "tags": [],
+    "input": "3 1\n",
+    "expected_output": "2/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric case to ensure input order doesn't matter for max(Y,W)=3.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 8,
+    "title": "Max roll is 3, symmetric case (Y=3, W=2)",
+    "tags": [],
+    "input": "3 2\n",
+    "expected_output": "2/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric case to ensure input order doesn't matter for max(Y,W)=3.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 9,
+    "title": "Both rolls are equal to 3",
+    "tags": ["all-equal"],
+    "input": "3 3\n",
+    "expected_output": "2/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the case where max(Y, W) = 3 and Y=W, requiring reduction of 4/6.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 10,
+    "title": "Problem sample case (Y=4, W=2)",
+    "tags": ["edge"],
+    "input": "4 2\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the sample from the problem statement. The probability is 3/6, which simplifies to 1/2.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 11,
+    "title": "Symmetric sample case (Y=2, W=4)",
+    "tags": [],
+    "input": "2 4\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric version of the problem sample to confirm max() logic.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 12,
+    "title": "Max roll is 4, (Y=1, W=4)",
+    "tags": [],
+    "input": "1 4\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Another case where max(Y,W)=4 leads to a probability of 3/6, reducing to 1/2.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 13,
+    "title": "Max roll is 4, (Y=3, W=4)",
+    "tags": [],
+    "input": "3 4\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Another case where max(Y,W)=4 leads to a probability of 3/6, reducing to 1/2.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 14,
+    "title": "Both rolls are equal to 4",
+    "tags": ["all-equal"],
+    "input": "4 4\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests max(Y,W)=4 with Y=W, requiring reduction of 3/6.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 15,
+    "title": "Max roll is 5, requires reduction (Y=5, W=1)",
+    "tags": [],
+    "input": "5 1\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests max(Y, W)=5. Favorable outcomes are 2, so probability is 2/6, which reduces to 1/3.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 16,
+    "title": "Max roll is 5, requires reduction (Y=5, W=2)",
+    "tags": [],
+    "input": "5 2\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Another test for max(Y, W)=5, requiring reduction of 2/6.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 17,
+    "title": "Max roll is 5, requires reduction (Y=5, W=3)",
+    "tags": [],
+    "input": "5 3\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Another test for max(Y, W)=5, requiring reduction of 2/6.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 18,
+    "title": "Max roll is 5, requires reduction (Y=5, W=4)",
+    "tags": [],
+    "input": "5 4\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Another test for max(Y, W)=5, requiring reduction of 2/6.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 19,
+    "title": "Symmetric cases for max roll 5 (Y=1..4, W=5)",
+    "tags": [],
+    "input": "1 5\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric case to ensure input order doesn't matter for max(Y,W)=5.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 20,
+    "title": "Symmetric cases for max roll 5 (Y=2, W=5)",
+    "tags": [],
+    "input": "2 5\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric case to ensure input order doesn't matter for max(Y,W)=5.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 21,
+    "title": "Symmetric cases for max roll 5 (Y=3, W=5)",
+    "tags": [],
+    "input": "3 5\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric case to ensure input order doesn't matter for max(Y,W)=5.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 22,
+    "title": "Symmetric cases for max roll 5 (Y=4, W=5)",
+    "tags": [],
+    "input": "4 5\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetric case to ensure input order doesn't matter for max(Y,W)=5.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 23,
+    "title": "Both rolls are equal to 5",
+    "tags": ["all-equal"],
+    "input": "5 5\n",
+    "expected_output": "1/3\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests max(Y,W)=5 with Y=W, requiring reduction of 2/6.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 24,
+    "title": "Maximum value for one roll, minimal for other",
+    "tags": ["max", "min", "edge"],
+    "input": "6 1\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests when max(Y, W) is the highest possible value (6). Dot only wins on a roll of 6. The probability 1/6 is irreducible.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 25,
+    "title": "Symmetric maximum value case",
+    "tags": ["max", "min", "edge"],
+    "input": "1 6\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Symmetric case for max(Y, W)=6 to ensure input order is handled correctly.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 26,
+    "title": "Maximum value for one roll, mid-range for other",
+    "tags": ["max"],
+    "input": "6 2\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Ensures any combination resulting in max(Y, W)=6 produces the correct 1/6 probability.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 27,
+    "title": "Maximum value for one roll, mid-range for other",
+    "tags": ["max"],
+    "input": "6 3\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Ensures any combination resulting in max(Y, W)=6 produces the correct 1/6 probability.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 28,
+    "title": "Maximum value for one roll, high-range for other",
+    "tags": ["max"],
+    "input": "6 4\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Ensures any combination resulting in max(Y, W)=6 produces the correct 1/6 probability.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 29,
+    "title": "Maximum value for one roll, high-range for other",
+    "tags": ["max"],
+    "input": "6 5\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Ensures any combination resulting in max(Y, W)=6 produces the correct 1/6 probability.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 30,
+    "title": "Symmetric max cases (Y=2..5, W=6)",
+    "tags": ["max"],
+    "input": "2 6\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Symmetric case coverage for max(Y, W)=6.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 31,
+    "title": "Symmetric max cases (Y=3, W=6)",
+    "tags": ["max"],
+    "input": "3 6\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Symmetric case coverage for max(Y, W)=6.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 32,
+    "title": "Symmetric max cases (Y=4, W=6)",
+    "tags": ["max"],
+    "input": "4 6\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Symmetric case coverage for max(Y, W)=6.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 33,
+    "title": "Symmetric max cases (Y=5, W=6)",
+    "tags": ["max"],
+    "input": "5 6\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Symmetric case coverage for max(Y, W)=6.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 34,
+    "title": "Maximum values for both rolls (Y=6, W=6)",
+    "tags": ["max", "edge", "all-equal"],
+    "input": "6 6\n",
+    "expected_output": "1/6\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the absolute maximum inputs for both Y and W. This is a critical boundary condition.",
+    "time_complexity_trigger": "constant time logic"
+  },
+  {
+    "id": 35,
+    "title": "Symmetric case from sample",
+    "tags": [],
+    "input": "2 4\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "This is a symmetric version of the provided sample case '4 2', ensuring the max function is used correctly.",
+    "time_complexity_trigger": "fraction reduction"
+  },
+  {
+    "id": 36,
+    "title": "Another case with max roll 4",
+    "tags": [],
+    "input": "4 1\n",
+    "expected_output": "1/2\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Completes the coverage for inputs where max(Y,W)=4, requiring reduction of 3/6.",
+    "time_complexity_trigger": "fraction reduction"
+  }
+],
+
+
+  
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/9/A",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 64149

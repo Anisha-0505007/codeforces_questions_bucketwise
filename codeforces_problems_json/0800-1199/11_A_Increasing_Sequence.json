@@ -9,6 +9,431 @@
     "implementation",
     "math"
   ],
+  "title": "A. Increasing Sequence",
+  "time_limit": "1 second",
+  "memory_limit": "64 megabytes",
+  "problem_statement": {
+    "definition": "A sequence a0, a1, ..., at-1 is called increasing if ai-1 < ai for each i: 0 < i < t.",
+    "task": "You are given a sequence b0, b1, ..., bn-1 and a positive integer d. In each move, you may choose one element of the given sequence and add d to it. What is the least number of moves required to make the given sequence increasing?"
+  },
+  "input_specification": {
+    "description": "The input consists of two lines.",
+    "line1": "The first line contains two integer numbers n and d.",
+    "line2": "The second line contains n space-separated integers representing the sequence b0, b1, ..., bn-1.",
+    "constraints": [
+      "2 ≤ n ≤ 2000",
+      "1 ≤ d ≤ 10^6",
+      "1 ≤ bi ≤ 10^6"
+    ]
+  },
+  "output_specification": {
+    "description": "Output a single integer — the minimal number of moves needed to make the sequence increasing."
+  },
+  "examples": [
+    {
+      "input": "4 2\n1 3 3 2",
+      "output": "3"
+    },
+    
+  {
+    "id": 1,
+    "title": "Minimum size strictly increasing case",
+    "tags": ["min","trivial"],
+    "input": "2 1\n1 2\n",
+    "expected_output": "0\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "trivial",
+    "why_included": "Smallest n with already increasing sequence ensures base correctness.",
+    "time_complexity_trigger": "trivial"
+  },
+  {
+    "id": 2,
+    "title": "Two equal numbers requires one increment",
+    "tags": ["edge","duplicates"],
+    "input": "2 1\n5 5\n",
+    "expected_output": "1\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "Handling duplicates is a core edge case.",
+    "time_complexity_trigger": "constant time"
+  },
+  {
+    "id": 3,
+    "title": "Two decreasing elements with large gap",
+    "tags": ["edge","reverse"],
+    "input": "2 3\n10 4\n",
+    "expected_output": "3\n",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "Second smaller by 6 requires 3 increments with d=3.",
+    "time_complexity_trigger": "constant"
+  },
+  {
+    "id": 4,
+    "title": "Medium increasing no move needed",
+    "tags": ["sorted"],
+    "input": "5 2\n1 3 5 7 9\n",
+    "expected_output": "0\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "trivial",
+    "why_included": "Already sorted array verifies zero operations path.",
+    "time_complexity_trigger": "trivial"
+  },
+  {
+    "id": 5,
+    "title": "All equal n=4 with small d",
+    "tags": ["all-equal","edge"],
+    "input": "4 1\n5 5 5 5\n",
+    "expected_output": "6\n",
+    "size_bytes": 18,
+    "difficulty_estimate": "easy",
+    "why_included": "Equal elements force staggered raises.",
+    "time_complexity_trigger": "linear increments"
+  },
+  {
+    "id": 6,
+    "title": "Strict decreasing with n=4 d=2",
+    "tags": ["reverse"],
+    "input": "4 2\n10 8 6 4\n",
+    "expected_output": "8\n",
+    "size_bytes": 20,
+    "difficulty_estimate": "medium",
+    "why_included": "Classic reverse case requiring successive increments.",
+    "time_complexity_trigger": "linear scan"
+  },
+  {
+    "id": 7,
+    "title": "Large d reduces moves equal elements",
+    "tags": ["random"],
+    "input": "5 10\n5 5 5 5 5\n",
+    "expected_output": "4\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "High d reduces needed increments in equal array.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 8,
+    "title": "Almost increasing with one duplicate",
+    "tags": ["edge","duplicates"],
+    "input": "3 1\n2 2 3\n",
+    "expected_output": "1\n",
+    "size_bytes": 16,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests single duplicate in front.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 9,
+    "title": "Random unsorted requires multi increments",
+    "tags": ["random"],
+    "input": "5 3\n2 9 1 5 4\n",
+    "expected_output": "7\n",
+    "size_bytes": 24,
+    "difficulty_estimate": "medium",
+    "why_included": "Scattered array tests algorithm consistency.",
+    "time_complexity_trigger": "O(n)"
+  },
+  {
+    "id": 10,
+    "title": "Stress ten equal ones with d=1",
+    "tags": ["stress","all-equal"],
+    "input": "10 1\n1 1 1 1 1 1 1 1 1 1\n",
+    "expected_output": "45\n",
+    "size_bytes": 38,
+    "difficulty_estimate": "hard",
+    "why_included": "Requires cumulative increments O(n^2) naive.",
+    "time_complexity_trigger": "naive TLE"
+  },
+  {
+    "id": 11,
+    "title": "Far apart elements already sorted",
+    "tags": ["sorted"],
+    "input": "4 2\n1 10 20 30\n",
+    "expected_output": "0\n",
+    "size_bytes": 24,
+    "difficulty_estimate": "trivial",
+    "why_included": "Large differences confirm no adjustment needed.",
+    "time_complexity_trigger": "none"
+  },
+  {
+    "id": 12,
+    "title": "Alternating highs and lows",
+    "tags": ["random","adversarial"],
+    "input": "6 2\n1 100 2 101 3 102\n",
+    "expected_output": "3\n",
+    "size_bytes": 34,
+    "difficulty_estimate": "medium",
+    "why_included": "Pattern forces repeated small corrections.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 13,
+    "title": "Max values all equal with max d",
+    "tags": ["max","all-equal"],
+    "input": "3 1000000\n1000000 1000000 1000000\n",
+    "expected_output": "3\n",
+    "size_bytes": 50,
+    "difficulty_estimate": "medium",
+    "why_included": "Upper constraint test.",
+    "time_complexity_trigger": "overflow risk"
+  },
+  {
+    "id": 14,
+    "title": "Eight equal values with small d=1",
+    "tags": ["all-equal","stress"],
+    "input": "8 1\n2 2 2 2 2 2 2 2\n",
+    "expected_output": "28\n",
+    "size_bytes": 30,
+    "difficulty_estimate": "medium",
+    "why_included": "Medium-size equal sequence shows cumulative increments pattern.",
+    "time_complexity_trigger": "quadratic naive risk"
+  },
+  {
+    "id": 15,
+    "title": "Random mixture with moderate d",
+    "tags": ["random"],
+    "input": "6 5\n2 7 13 9 25 18\n",
+    "expected_output": "7\n",
+    "size_bytes": 30,
+    "difficulty_estimate": "medium",
+    "why_included": "Mixed numbers require selective increments.",
+    "time_complexity_trigger": "linear scan"
+  },
+  {
+    "id": 16,
+    "title": "Five decreasing consecutive values d=1",
+    "tags": ["reverse","stress"],
+    "input": "5 1\n10 9 8 7 6\n",
+    "expected_output": "10\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "medium",
+    "why_included": "Strict decrement needs large moves when d=1.",
+    "time_complexity_trigger": "linear increments"
+  },
+  {
+    "id": 17,
+    "title": "Prime numbers strictly increasing",
+    "tags": ["prime","sorted"],
+    "input": "5 2\n2 3 5 7 11\n",
+    "expected_output": "0\n",
+    "size_bytes": 24,
+    "difficulty_estimate": "trivial",
+    "why_included": "Sequence of primes is already increasing.",
+    "time_complexity_trigger": "none"
+  },
+  {
+    "id": 18,
+    "title": "Composite equal numbers with d=3",
+    "tags": ["composite","duplicates"],
+    "input": "4 3\n4 4 4 4\n",
+    "expected_output": "6\n",
+    "size_bytes": 18,
+    "difficulty_estimate": "easy",
+    "why_included": "Equal composites need consistent increments.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 19,
+    "title": "Mix of very small and large values",
+    "tags": ["random"],
+    "input": "6 4\n1 50 2 49 3 48\n",
+    "expected_output": "9\n",
+    "size_bytes": 30,
+    "difficulty_estimate": "medium",
+    "why_included": "Alternating high/low complicates increments sequence.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 20,
+    "title": "Seven equal with d=1",
+    "tags": ["all-equal"],
+    "input": "7 1\n5 5 5 5 5 5 5\n",
+    "expected_output": "21\n",
+    "size_bytes": 24,
+    "difficulty_estimate": "medium",
+    "why_included": "Shows consistent stair-step behavior.",
+    "time_complexity_trigger": "linear growth"
+  },
+  {
+    "id": 21,
+    "title": "Strictly decreasing 6 values d=2",
+    "tags": ["reverse"],
+    "input": "6 2\n12 11 10 9 8 7\n",
+    "expected_output": "15\n",
+    "size_bytes": 30,
+    "difficulty_estimate": "medium",
+    "why_included": "Forces repeated increments cascade.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 22,
+    "title": "Increasing sequence with differences equal to d",
+    "tags": ["sorted","edge"],
+    "input": "5 2\n2 4 6 8 10\n",
+    "expected_output": "0\n",
+    "size_bytes": 24,
+    "difficulty_estimate": "trivial",
+    "why_included": "Spacing matching d is fine.",
+    "time_complexity_trigger": "none"
+  },
+  {
+    "id": 23,
+    "title": "Final duplicate breaks order",
+    "tags": ["edge","duplicates"],
+    "input": "4 3\n1 4 7 7\n",
+    "expected_output": "1\n",
+    "size_bytes": 20,
+    "difficulty_estimate": "easy",
+    "why_included": "Last duplicate needs one update.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 24,
+    "title": "n=3 middle needs small increment",
+    "tags": ["edge"],
+    "input": "3 2\n1 1 5\n",
+    "expected_output": "1\n",
+    "size_bytes": 16,
+    "difficulty_estimate": "easy",
+    "why_included": "Middle element equal to first must move once.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 25,
+    "title": "Alternating high low long 8 elements",
+    "tags": ["adversarial","stress"],
+    "input": "8 1\n9 1 8 2 7 3 6 4\n",
+    "expected_output": "28\n",
+    "size_bytes": 36,
+    "difficulty_estimate": "hard",
+    "why_included": "Worst-case pattern stresses naive implementation.",
+    "time_complexity_trigger": "quadratic naive"
+  },
+  {
+    "id": 26,
+    "title": "High values all equal with d=1",
+    "tags": ["max","all-equal","stress"],
+    "input": "10 1\n1000000 1000000 1000000 1000000 1000000 1000000 1000000 1000000 1000000 1000000\n",
+    "expected_output": "45\n",
+    "size_bytes": 110,
+    "difficulty_estimate": "hard",
+    "why_included": "n=10 with large equal values at constraint edge.",
+    "time_complexity_trigger": "linear increments risk"
+  },
+  {
+    "id": 27,
+    "title": "Alternating up-down within close ranges",
+    "tags": ["random"],
+    "input": "6 5\n10 1 11 2 12 3\n",
+    "expected_output": "6\n",
+    "size_bytes": 30,
+    "difficulty_estimate": "medium",
+    "why_included": "Pattern requires targeted increments across sequence.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 28,
+    "title": "Two equal numbers in middle",
+    "tags": ["duplicates"],
+    "input": "5 2\n3 10 10 20 30\n",
+    "expected_output": "1\n",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests internal duplicates correction.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 29,
+    "title": "Repeated small duplicates accumulate quickly",
+    "tags": ["pathological"],
+    "input": "5 1\n5 5 6 6 7\n",
+    "expected_output": "4\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "medium",
+    "why_included": "Requires stair climb across near-equal values.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 30,
+    "title": "Alternating pairs equal increments needed",
+    "tags": ["duplicates"],
+    "input": "6 2\n4 4 6 6 8 8\n",
+    "expected_output": "3\n",
+    "size_bytes": 24,
+    "difficulty_estimate": "easy",
+    "why_included": "Duplicate pairs force stagger fixes.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 31,
+    "title": "Huge d solves quickly",
+    "tags": ["max","edge"],
+    "input": "5 1000000\n1 1 1 1 1\n",
+    "expected_output": "4\n",
+    "size_bytes": 30,
+    "difficulty_estimate": "easy",
+    "why_included": "Huge d means only one increment per duplicate.",
+    "time_complexity_trigger": "none"
+  },
+  {
+    "id": 32,
+    "title": "Mixed large small duplicates sequence",
+    "tags": ["adversarial"],
+    "input": "6 1\n1 1 1000000 1000000 500000 500000\n",
+    "expected_output": "6\n",
+    "size_bytes": 54,
+    "difficulty_estimate": "hard",
+    "why_included": "Mixture of varying duplicates stresses adjustment logic.",
+    "time_complexity_trigger": "linear scan"
+  },
+  {
+    "id": 33,
+    "title": "Perfect increasing increments of one",
+    "tags": ["sorted"],
+    "input": "5 1\n1 2 3 4 5\n",
+    "expected_output": "0\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "trivial",
+    "why_included": "Basic case, minimal d, already sorted.",
+    "time_complexity_trigger": "trivial"
+  },
+  {
+    "id": 34,
+    "title": "Nine element messy mixed pattern",
+    "tags": ["random"],
+    "input": "9 3\n1 3 2 6 4 8 5 10 9\n",
+    "expected_output": "8\n",
+    "size_bytes": 40,
+    "difficulty_estimate": "medium",
+    "why_included": "Longer random ordering stresses calculations.",
+    "time_complexity_trigger": "linear"
+  },
+  {
+    "id": 35,
+    "title": "Single dip in otherwise rising sequence",
+    "tags": ["edge","random"],
+    "input": "5 2\n1 4 2 5 6\n",
+    "expected_output": "1\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests small local dip in an otherwise increasing sequence, requiring one increment.",
+    "time_complexity_trigger": "linear scan"
+  },
+  {
+    "id": 36,
+    "title": "Combined T-file",
+    "tags": ["combined","stress"],
+    "input": "35\n2 1\n1 2\n2 1\n5 5\n2 3\n10 4\n5 2\n1 3 5 7 9\n4 1\n5 5 5 5\n4 2\n10 8 6 4\n5 10\n5 5 5 5 5\n3 1\n2 2 3\n5 3\n2 9 1 5 4\n10 1\n1 1 1 1 1 1 1 1 1 1\n4 2\n1 10 20 30\n6 2\n1 100 2 101 3 102\n3 1000000\n1000000 1000000 1000000\n8 1\n2 2 2 2 2 2 2 2\n6 5\n2 7 13 9 25 18\n5 1\n10 9 8 7 6\n5 2\n2 3 5 7 11\n4 3\n4 4 4 4\n6 4\n1 50 2 49 3 48\n7 1\n5 5 5 5 5 5 5\n6 2\n12 11 10 9 8 7\n5 2\n2 4 6 8 10\n4 3\n1 4 7 7\n3 2\n1 1 5\n8 1\n9 1 8 2 7 3 6 4\n10 1\n1000000 1000000 1000000 1000000 1000000 1000000 1000000 1000000 1000000 1000000\n6 5\n10 1 11 2 12 3\n5 2\n3 10 10 20 30\n5 1\n5 5 6 6 7\n6 2\n4 4 6 6 8 8\n5 1000000\n1 1 1 1 1\n6 1\n1 1 1000000 1000000 500000 500000\n5 1\n1 2 3 4 5\n9 3\n1 3 2 6 4 8 5 10 9\n5 2\n1 4 2 5 6\n",
+    "expected_output": "0\n1\n3\n0\n6\n8\n4\n1\n7\n45\n0\n3\n3\n28\n7\n10\n0\n6\n9\n21\n15\n0\n1\n1\n28\n45\n6\n1\n4\n3\n4\n6\n0\n8\n1\n",
+    "size_bytes": 820,
+    "difficulty_estimate": "very-hard",
+    "why_included": "Aggregates all 35 previous cases into one combined T-file input (with T = 35) to simulate multi-case competitive programming input.",
+    "time_complexity_trigger": "linear aggregation"
+  }
+],
+
+    
   "problem_statement_link": "https://codeforces.com/problemset/problem/11/A",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 14550

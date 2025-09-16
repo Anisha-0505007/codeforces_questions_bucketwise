@@ -7,6 +7,309 @@
   "tags": [
     "implementation"
   ],
+  "problem_name": "A. Power Consumption Calculation",
+  "time_limit": "1 second",
+  "memory_limit": "256 megabytes",
+  "problem_statement": "Tom is interested in power consumption of his favourite laptop. His laptop has three modes. In normal mode laptop consumes P1 watt per minute. T1 minutes after Tom moved the mouse or touched the keyboard for the last time, a screensaver starts and power consumption changes to P2 watt per minute. Finally, after T2 minutes from the start of the screensaver, laptop switches to the \"sleep\" mode and consumes P3 watt per minute. If Tom moves the mouse or touches the keyboard when the laptop is in the second or in the third mode, it switches to the first (normal) mode. Tom's work with the laptop can be divided into n time periods [l1, r1], [l2, r2], ..., [ln, rn]. During each interval Tom continuously moves the mouse and presses buttons on the keyboard. Between the periods Tom stays away from the laptop. Find out the total amount of power consumed by the laptop during the period [l1, rn].",
+  "input_specification": "The first line contains 6 integer numbers n, P1, P2, P3, T1, T2 (1 ≤ n ≤ 100, 0 ≤ P1, P2, P3 ≤ 100, 1 ≤ T1, T2 ≤ 60). The following n lines contain description of Tom's work. Each i-th of these lines contains two space-separated integers li and ri (0 ≤ li < ri ≤ 1440, ri < li + 1 for i <  n), which stand for the start and the end of the i-th period of work.",
+  "output_specification": "Output the answer to the problem.",
+  "sample_cases": [
+    {
+      "input": "1 3 2 1 5 10\n0 10",
+      "output": "30"
+    },
+    {
+      "input": "2 8 4 2 5 10\n20 30\n50 100",
+      "output": "570"
+    },
+    {
+    "id": 1,
+    "title": "First sample case from problem description",
+    "tags": ["min", "edge"],
+    "input": "1 3 2 1 5 10\n0 10\n",
+    "expected_output": "30\n",
+    "size_bytes": 17,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the first example from the problem statement. With n=1, there are no idle periods to calculate.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 2,
+    "title": "Second sample case from problem description",
+    "tags": ["edge"],
+    "input": "2 8 4 2 5 10\n20 30\n50 100\n",
+    "expected_output": "570\n",
+    "size_bytes": 27,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the second example. It tests an idle period that is long enough to enter all three power modes (P1, P2, P3).",
+    "time_complexity_trigger": "all three idle modes"
+  },
+  {
+    "id": 3,
+    "title": "Idle period shorter than T1",
+    "tags": ["edge"],
+    "input": "2 10 5 1 20 30\n0 10\n15 25\n",
+    "expected_output": "250\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests an idle period (duration 5) that is shorter than T1 (20). The laptop stays in P1 mode during this gap.",
+    "time_complexity_trigger": "P1 idle mode only"
+  },
+  {
+    "id": 4,
+    "title": "Idle period exactly equal to T1",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n20 30\n",
+    "expected_output": "300\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary where the idle period duration (10) is exactly T1. The laptop should stay in P1 mode for the whole gap.",
+    "time_complexity_trigger": "boundary T1"
+  },
+  {
+    "id": 5,
+    "title": "Idle period enters P2 mode slightly",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n21 30\n",
+    "expected_output": "295\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary where idle duration (11) is T1+1. This triggers exactly 1 minute of P2 (screensaver) mode.",
+    "time_complexity_trigger": "boundary T1+1"
+  },
+  {
+    "id": 6,
+    "title": "Idle period shorter than T1+T2",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n25 30\n",
+    "expected_output": "275\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests an idle period (duration 15) that is between T1 and T1+T2. The laptop enters P1 and P2 modes during the gap.",
+    "time_complexity_trigger": "P1 and P2 idle modes"
+  },
+  {
+    "id": 7,
+    "title": "Idle period exactly equal to T1+T2",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n40 50\n",
+    "expected_output": "400\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary where idle duration (30) is exactly T1+T2. The laptop should use P1 and P2 modes, but not enter P3 sleep mode.",
+    "time_complexity_trigger": "boundary T1+T2"
+  },
+  {
+    "id": 8,
+    "title": "Idle period enters P3 mode slightly",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n41 50\n",
+    "expected_output": "401\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary where idle duration (31) is T1+T2+1. This triggers exactly 1 minute of P3 (sleep) mode.",
+    "time_complexity_trigger": "boundary T1+T2+1"
+  },
+  {
+    "id": 9,
+    "title": "Minimum values for all parameters",
+    "tags": ["min", "edge"],
+    "input": "1 0 0 0 1 1\n0 1\n",
+    "expected_output": "0\n",
+    "size_bytes": 16,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests with n=1 and all power consumptions at their minimum (0). The result must be 0.",
+    "time_complexity_trigger": "zero-value handling"
+  },
+  {
+    "id": 10,
+    "title": "Maximum values for all parameters",
+    "tags": ["max", "stress"],
+    "input": "100 100 100 100 60 60\n0 1\n3 4\n6 7\n9 10\n12 13\n15 16\n18 19\n21 22\n24 25\n27 28\n30 31\n33 34\n36 37\n39 40\n42 43\n45 46\n48 49\n51 52\n54 55\n57 58\n60 61\n63 64\n66 67\n69 70\n72 73\n75 76\n78 79\n81 82\n84 85\n87 88\n90 91\n93 94\n96 97\n99 100\n102 103\n105 106\n108 109\n111 112\n114 115\n117 118\n120 121\n123 124\n126 127\n129 130\n132 133\n135 136\n138 139\n141 142\n144 145\n147 148\n150 151\n153 154\n156 157\n159 160\n162 163\n165 166\n168 169\n171 172\n174 175\n177 178\n180 181\n183 184\n186 187\n189 190\n192 193\n195 196\n198 199\n201 202\n204 205\n207 208\n210 211\n213 214\n216 217\n219 220\n222 223\n225 226\n228 229\n231 232\n234 235\n237 238\n240 241\n243 244\n246 247\n249 250\n252 253\n255 256\n258 259\n261 262\n264 265\n267 268\n270 271\n273 274\n276 277\n279 280\n282 283\n285 286\n288 289\n291 292\n294 295\n297 298\n",
+    "expected_output": "29800\n",
+    "size_bytes": 725,
+    "difficulty_estimate": "hard",
+    "why_included": "Stress test with maximum n, max power values, and many short intervals with short gaps. The gaps are all length 2, well within P1 range.",
+    "time_complexity_trigger": "loop performance"
+  },
+  {
+    "id": 11,
+    "title": "All power consumptions are equal",
+    "tags": ["all-equal"],
+    "input": "3 50 50 50 10 20\n10 20\n30 40\n100 150\n",
+    "expected_output": "7000\n",
+    "size_bytes": 39,
+    "difficulty_estimate": "easy",
+    "why_included": "When all P values are the same, the total consumption is simply the total duration (r_n - l_1) times the power, regardless of modes.",
+    "time_complexity_trigger": "simplification check"
+  },
+  {
+    "id": 12,
+    "title": "Atypical power consumption P1 < P2 < P3",
+    "tags": ["adversarial"],
+    "input": "2 10 20 30 5 10\n0 100\n120 200\n",
+    "expected_output": "2250\n",
+    "size_bytes": 28,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests an unusual but valid case where power consumption increases in screensaver/sleep modes. This shouldn't affect the logic.",
+    "time_complexity_trigger": "logic correctness"
+  },
+  {
+    "id": 13,
+    "title": "Multiple gaps with different mode triggers",
+    "tags": [],
+    "input": "4 10 5 2 10 20\n10 20\n25 35\n50 60\n100 110\n",
+    "expected_output": "845\n",
+    "size_bytes": 45,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a sequence of gaps: gap 1 is <T1 (P1 only), gap 2 is >T1 and <T1+T2 (P1, P2), gap 3 is >T1+T2 (P1, P2, P3).",
+    "time_complexity_trigger": "iterative logic"
+  },
+  {
+    "id": 1,
+    "title": "First sample case from problem description",
+    "tags": ["min", "edge"],
+    "input": "1 3 2 1 5 10\n0 10\n",
+    "expected_output": "30\n",
+    "size_bytes": 17,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the first example from the problem statement. With n=1, there are no idle periods to calculate.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 2,
+    "title": "Second sample case from problem description",
+    "tags": ["edge"],
+    "input": "2 8 4 2 5 10\n20 30\n50 100\n",
+    "expected_output": "570\n",
+    "size_bytes": 27,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the second example. It tests an idle period that is long enough to enter all three power modes (P1, P2, P3).",
+    "time_complexity_trigger": "all three idle modes"
+  },
+  {
+    "id": 3,
+    "title": "Idle period shorter than T1",
+    "tags": ["edge"],
+    "input": "2 10 5 1 20 30\n0 10\n15 25\n",
+    "expected_output": "250\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests an idle period (duration 5) that is shorter than T1 (20). The laptop stays in P1 mode during this gap.",
+    "time_complexity_trigger": "P1 idle mode only"
+  },
+  {
+    "id": 4,
+    "title": "Idle period exactly equal to T1",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n20 30\n",
+    "expected_output": "300\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary where the idle period duration (10) is exactly T1. The laptop should stay in P1 mode for the whole gap.",
+    "time_complexity_trigger": "boundary T1"
+  },
+  {
+    "id": 5,
+    "title": "Idle period enters P2 mode slightly",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n21 30\n",
+    "expected_output": "295\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary where idle duration (11) is T1+1. This triggers exactly 1 minute of P2 (screensaver) mode.",
+    "time_complexity_trigger": "boundary T1+1"
+  },
+  {
+    "id": 6,
+    "title": "Idle period shorter than T1+T2",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n25 30\n",
+    "expected_output": "275\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests an idle period (duration 15) that is between T1 and T1+T2. The laptop enters P1 and P2 modes during the gap.",
+    "time_complexity_trigger": "P1 and P2 idle modes"
+  },
+  {
+    "id": 7,
+    "title": "Idle period exactly equal to T1+T2",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n40 50\n",
+    "expected_output": "400\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary where idle duration (30) is exactly T1+T2. The laptop should use P1 and P2 modes, but not enter P3 sleep mode.",
+    "time_complexity_trigger": "boundary T1+T2"
+  },
+  {
+    "id": 8,
+    "title": "Idle period enters P3 mode slightly",
+    "tags": ["edge"],
+    "input": "2 10 5 1 10 20\n0 10\n41 50\n",
+    "expected_output": "401\n",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary where idle duration (31) is T1+T2+1. This triggers exactly 1 minute of P3 (sleep) mode.",
+    "time_complexity_trigger": "boundary T1+T2+1"
+  },
+  {
+    "id": 9,
+    "title": "Minimum values for all parameters",
+    "tags": ["min", "edge"],
+    "input": "1 0 0 0 1 1\n0 1\n",
+    "expected_output": "0\n",
+    "size_bytes": 16,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests with n=1 and all power consumptions at their minimum (0). The result must be 0.",
+    "time_complexity_trigger": "zero-value handling"
+  },
+  {
+    "id": 10,
+    "title": "Maximum values for all parameters",
+    "tags": ["max", "stress"],
+    "input": "100 100 100 100 60 60\n0 1\n3 4\n6 7\n9 10\n12 13\n15 16\n18 19\n21 22\n24 25\n27 28\n30 31\n33 34\n36 37\n39 40\n42 43\n45 46\n48 49\n51 52\n54 55\n57 58\n60 61\n63 64\n66 67\n69 70\n72 73\n75 76\n78 79\n81 82\n84 85\n87 88\n90 91\n93 94\n96 97\n99 100\n102 103\n105 106\n108 109\n111 112\n114 115\n117 118\n120 121\n123 124\n126 127\n129 130\n132 133\n135 136\n138 139\n141 142\n144 145\n147 148\n150 151\n153 154\n156 157\n159 160\n162 163\n165 166\n168 169\n171 172\n174 175\n177 178\n180 181\n183 184\n186 187\n189 190\n192 193\n195 196\n198 199\n201 202\n204 205\n207 208\n210 211\n213 214\n216 217\n219 220\n222 223\n225 226\n228 229\n231 232\n234 235\n237 238\n240 241\n243 244\n246 247\n249 250\n252 253\n255 256\n258 259\n261 262\n264 265\n267 268\n270 271\n273 274\n276 277\n279 280\n282 283\n285 286\n288 289\n291 292\n294 295\n297 298\n",
+    "expected_output": "29800\n",
+    "size_bytes": 725,
+    "difficulty_estimate": "hard",
+    "why_included": "Stress test with maximum n, max power values, and many short intervals with short gaps. The gaps are all length 2, well within P1 range.",
+    "time_complexity_trigger": "loop performance"
+  },
+  {
+    "id": 11,
+    "title": "All power consumptions are equal",
+    "tags": ["all-equal"],
+    "input": "3 50 50 50 10 20\n10 20\n30 40\n100 150\n",
+    "expected_output": "7000\n",
+    "size_bytes": 39,
+    "difficulty_estimate": "easy",
+    "why_included": "When all P values are the same, the total consumption is simply the total duration (r_n - l_1) times the power, regardless of modes.",
+    "time_complexity_trigger": "simplification check"
+  },
+  {
+    "id": 12,
+    "title": "Atypical power consumption P1 < P2 < P3",
+    "tags": ["adversarial"],
+    "input": "2 10 20 30 5 10\n0 100\n120 200\n",
+    "expected_output": "2250\n",
+    "size_bytes": 28,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests an unusual but valid case where power consumption increases in screensaver/sleep modes. This shouldn't affect the logic.",
+    "time_complexity_trigger": "logic correctness"
+  },
+  {
+    "id": 13,
+    "title": "Multiple gaps with different mode triggers",
+    "tags": [],
+    "input": "4 10 5 2 10 20\n10 20\n25 35\n50 60\n100 110\n",
+    "expected_output": "845\n",
+    "size_bytes": 45,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a sequence of gaps: gap 1 is <T1 (P1 only), gap 2 is >T1 and <T1+T2 (P1, P2), gap 3 is >T1+T2 (P1, P2, P3).",
+    "time_complexity_trigger": "iterative logic"
+  }
+],
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/10/A",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 7829
