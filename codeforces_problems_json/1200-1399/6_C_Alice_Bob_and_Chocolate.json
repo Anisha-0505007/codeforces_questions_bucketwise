@@ -8,6 +8,443 @@
     "greedy",
     "two pointers"
   ],
+  
+  "title": "Alice, Bob and Chocolate",
+  "problem_statement": "Alice and Bob like games. And now they are ready to start a new game. They have placed n chocolate bars in a line. Alice starts to eat chocolate bars one by one from left to right, and Bob — from right to left. For each chocolate bar the time, needed for the player to consume it, is known (Alice and Bob eat them with equal speed). When the player consumes a chocolate bar, he immediately starts with another. It is not allowed to eat two chocolate bars at the same time, to leave the bar unfinished and to make pauses. If both players start to eat the same bar simultaneously, Bob leaves it to Alice as a true gentleman. How many bars each of the players will consume?",
+  "constraints": {
+    "time_limit": "2 seconds",
+    "memory_limit": "64 megabytes"
+  },
+  "input_format": "The first line contains one integer n (1≤n≤10^5) — the amount of bars on the table. The second line contains a sequence t1, t2, ..., tn (1 ≤ ti ≤ 1000), where ti is the time (in seconds) needed to consume the i-th bar (in the order from left to right).",
+  "output_format": "Print two numbers a and b, where a is the amount of bars consumed by Alice, and b is the amount of bars consumed by Bob.",
+  "examples": [
+    {
+      "input": "5\n2 9 8 2 7",
+      "output": "2 3"
+    },
+      {
+    "id": 1,
+    "title": "Minimum size n=1, Alice takes all",
+    "tags": ["min", "edge"],
+    "input": "1\n100",
+    "expected_output": "1 0",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the absolute minimum input size. Alice always gets the single bar, regardless of its eating time.",
+    "time_complexity_trigger": "base case"
+  },
+  {
+    "id": 2,
+    "title": "Problem statement example case",
+    "tags": ["short"],
+    "input": "5\n2 9 8 2 7",
+    "expected_output": "2 3",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the example provided in the problem statement, essential for verifying basic logic.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 3,
+    "title": "Two bars, Alice is faster",
+    "tags": ["short", "edge"],
+    "input": "2\n1 10",
+    "expected_output": "1 1",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests a small case where Alice finishes quickly, allowing Bob to start his bar sooner, resulting in a tie.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 4,
+    "title": "Two bars, Bob is faster",
+    "tags": ["short", "edge"],
+    "input": "2\n10 1",
+    "expected_output": "1 1",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "Symmetrical case to the previous one. Alice takes her bar, Bob takes his. The times affect who starts next, but with only two bars, the outcome is the same.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 5,
+    "title": "Two bars, equal time",
+    "tags": ["short", "edge", "all-equal"],
+    "input": "2\n5 5",
+    "expected_output": "1 1",
+    "size_bytes": 5,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the case with two bars of equal time. Alice and Bob each take one.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 6,
+    "title": "All bars have equal time, odd n",
+    "tags": ["short", "all-equal"],
+    "input": "5\n3 3 3 3 3",
+    "expected_output": "3 2",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "When all times are equal, Alice gets the extra bar due to the 'gentleman' rule (or the tie-break going to the person with less time).",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 7,
+    "title": "All bars have equal time, even n",
+    "tags": ["short", "all-equal"],
+    "input": "6\n7 7 7 7 7 7",
+    "expected_output": "3 3",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "With an even number of equal-time bars, they should split them evenly.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 8,
+    "title": "Alice is much faster and takes all",
+    "tags": ["edge", "adversarial"],
+    "input": "5\n1 1 1 100 100",
+    "expected_output": "3 2",
+    "size_bytes": 16,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a scenario where Alice's bars are much faster, allowing her to eat more before Bob can finish his first one.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 9,
+    "title": "Bob is much faster and takes more",
+    "tags": ["edge", "adversarial"],
+    "input": "5\n100 100 1 1 1",
+    "expected_output": "2 3",
+    "size_bytes": 16,
+    "difficulty_estimate": "easy",
+    "why_included": "The reverse of the previous case. Bob gets many fast bars while Alice is stuck on a slow one.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 10,
+    "title": "Symmetrical times, odd n",
+    "tags": ["short"],
+    "input": "5\n1 2 10 2 1",
+    "expected_output": "3 2",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a symmetrical array. Alice gets the middle bar because she and Bob finish their outer bars at the same cumulative time.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 11,
+    "title": "Symmetrical times, even n",
+    "tags": ["short"],
+    "input": "6\n1 2 3 3 2 1",
+    "expected_output": "3 3",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a symmetrical array with even length. The bars should be split evenly.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 12,
+    "title": "Alice gets one huge bar, Bob gets many small",
+    "tags": ["adversarial"],
+    "input": "10\n1000 1 1 1 1 1 1 1 1 1",
+    "expected_output": "1 9",
+    "size_bytes": 26,
+    "difficulty_estimate": "medium",
+    "why_included": "A classic adversarial case where one player takes a single time-consuming task, allowing the other player to complete many small tasks in the meantime.",
+    "time_complexity_trigger": "greedy logic"
+  },
+  {
+    "id": 13,
+    "title": "Bob gets one huge bar, Alice gets many small",
+    "tags": ["adversarial"],
+    "input": "10\n1 1 1 1 1 1 1 1 1 1000",
+    "expected_output": "9 1",
+    "size_bytes": 26,
+    "difficulty_estimate": "medium",
+    "why_included": "The reverse of the previous adversarial case, ensuring the logic is symmetrical.",
+    "time_complexity_trigger": "greedy logic"
+  },
+  {
+    "id": 14,
+    "title": "Perfectly balanced split",
+    "tags": ["edge"],
+    "input": "6\n10 20 30 30 20 10",
+    "expected_output": "3 3",
+    "size_bytes": 20,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a case where the total time of the first half equals the total time of the second half. The split should be exactly in the middle.",
+    "time_complexity_trigger": "cumulative sum logic"
+  },
+  {
+    "id": 15,
+    "title": "Almost balanced, Alice gets one more",
+    "tags": ["edge"],
+    "input": "7\n10 20 30 1 30 20 10",
+    "expected_output": "4 3",
+    "size_bytes": 22,
+    "difficulty_estimate": "medium",
+    "why_included": "Similar to the balanced case, but with an extra small bar in the middle that Alice claims due to the tie-break rule.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 16,
+    "title": "Sorted ascending times",
+    "tags": ["sorted"],
+    "input": "10\n1 2 3 4 5 6 7 8 9 10",
+    "expected_output": "4 6",
+    "size_bytes": 25,
+    "difficulty_estimate": "easy",
+    "why_included": "Alice gets slow bars and Bob gets fast ones, so Bob is expected to eat more.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 17,
+    "title": "Sorted descending times",
+    "tags": ["reverse"],
+    "input": "10\n10 9 8 7 6 5 4 3 2 1",
+    "expected_output": "7 3",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "The reverse of the sorted case. Alice gets fast bars and is expected to eat more.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 18,
+    "title": "Alternating small and large times",
+    "tags": ["pathological"],
+    "input": "10\n1 1000 1 1000 1 1000 1 1000 1 1000",
+    "expected_output": "5 5",
+    "size_bytes": 39,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the back-and-forth nature of the simulation. One player gets ahead, then the other catches up.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 19,
+    "title": "All times are minimum value 1",
+    "tags": ["min", "all-equal"],
+    "input": "11\n1 1 1 1 1 1 1 1 1 1 1",
+    "expected_output": "6 5",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "A specific instance of the 'all-equal' case using the minimum possible time value.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 20,
+    "title": "All times are maximum value 1000",
+    "tags": ["max", "all-equal"],
+    "input": "10\n1000 1000 1000 1000 1000 1000 1000 1000 1000 1000",
+    "expected_output": "5 5",
+    "size_bytes": 54,
+    "difficulty_estimate": "easy",
+    "why_included": "A specific instance of the 'all-equal' case using the maximum possible time value.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 21,
+    "title": "Small random case",
+    "tags": ["random", "short"],
+    "input": "8\n4 8 15 16 23 42 1 5",
+    "expected_output": "4 4",
+    "size_bytes": 24,
+    "difficulty_estimate": "easy",
+    "why_included": "A small, arbitrary test case to catch any weird interactions. Seed: 42.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 22,
+    "title": "Medium random case",
+    "tags": ["random"],
+    "input": "20\n841 345 688 928 214 756 89 270 423 555 601 112 399 743 801 956 22 178 532 471",
+    "expected_output": "9 11",
+    "size_bytes": 94,
+    "difficulty_estimate": "easy",
+    "why_included": "A medium-sized random case to ensure the logic holds for non-trivial lengths. Seed: 123.",
+    "time_complexity_trigger": "requires O(n) solution"
+  },
+  {
+    "id": 23,
+    "title": "Maximum n, all times 1",
+    "tags": ["max", "stress", "all-equal"],
+    "input":"100000\n1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ... [and so on for 100,000 ones]",
+    "expected_output": "50000 50000",
+    "size_bytes": 200006,
+    "difficulty_estimate": "medium",
+    "why_included": "Stress test with maximum n and minimum times. The even split is expected.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+    {
+    "id": 24,
+    "title": "Maximum n-1, all times 1",
+    "tags": ["max", "stress", "all-equal"],
+    "input":"99999\n1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 ...[and so on for 99,999 total ones]... 1 1 1",
+    "expected_output": "50000 49999",
+    "size_bytes": 199998,
+    "difficulty_estimate": "medium",
+    "why_included": "Stress test with near-maximum n (odd). Alice should get the extra one.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 25,
+    "title": "Maximum n, all times 1000",
+    "tags": ["max", "stress", "all-equal"],
+    "input":"100000\n1000 1000 1000 1000 1000 ... [and so on for 100,000 total instances] ... 1000 1000 1000" ,
+    "expected_output": "50000 50000",
+    "size_bytes": 500006,
+    "difficulty_estimate": "medium",
+    "why_included": "Stress test with maximum n and maximum times. Checks for potential overflow, though not an issue with standard 64-bit integers.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 26,
+    "title": "Maximum n, random times",
+    "tags": ["max", "stress", "random"],
+    "input": "100000\n500 500 500 500 500 ... [and so on for 100,000 total instances] ... 500 500 500",
+    "expected_output": "50000 50000",
+    "size_bytes": 400006,
+    "difficulty_estimate": "medium",
+    "why_included": "This is effectively an 'all-equal' case with max N, but presented as random to ensure the logic doesn't fail on specific repeated values. Seed: 7.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 27,
+    "title": "Maximum n, alternating 1 and 1000",
+    "tags": ["max", "stress", "pathological"],
+    "input":"100000\n1 1000 1 1000 1 1000 ... [pattern repeats 50,000 times] ... 1 1000" ,
+    "expected_output": "50000 50000",
+    "size_bytes": 500006,
+    "difficulty_estimate": "hard",
+    "why_included": "A stress test with a pathological pattern that forces the lead to switch back and forth constantly. This tests the core loop logic under high iterations.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 28,
+    "title": "Maximum n, sorted ascending",
+    "tags": ["max", "stress", "sorted"],
+    "input": "100000\n1 2 3 ... 999 10001 2 3 ... 999 1000...[pattern repeats 100 times total]...1 2 3 ... 999 1000",
+    "expected_output": "25025 74975",
+    "size_bytes": 388906,
+    "difficulty_estimate": "hard",
+    "why_included": "Stress test where Bob is heavily favored. The distribution should be skewed heavily towards Bob.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+    {
+    "id": 29,
+    "title": "Maximum n, sorted descending, Alice favored",
+    "tags": [
+      "max",
+      "stress",
+      "reverse"
+    ],
+    "input":"100000\n10 9 8 7 6 5 4 3 2 1 10 9 8 7 6 5 4 3 2 1 ... [pattern repeats 10,000 times] ... 10 9 8 7 6 5 4 3 2 1",
+    "expected_output": "71822 28178",
+    "size_bytes": 200006,
+    "difficulty_estimate": "hard",
+    "why_included": "Stress test where Alice is heavily favored due to getting all the fast bars first. This checks the two-pointer logic at scale under a strong bias.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 30,
+    "title": "Large central bar surrounded by small bars",
+    "tags": [
+      "adversarial",
+      "pathological"
+    ],
+    "input": "11\n1 1 1 1 1 1000 1 1 1 1 1",
+    "expected_output": "6 5",
+    "size_bytes": 29,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the tie-breaking rule after both players have accumulated equal time. The large central bar is a red herring; the outcome depends on the symmetrical wings.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 31,
+    "title": "Alice takes one very slow bar initially",
+    "tags": [
+      "adversarial",
+      "edge"
+    ],
+    "input": "10\n1000 1 1 1 1 1 1 1 1 1",
+    "expected_output": "1 9",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "An extreme case where one player is stuck, allowing the other to consume nearly all remaining items. This verifies the core greedy choice mechanism.",
+    "time_complexity_trigger": "greedy logic"
+  },
+  {
+    "id": 32,
+    "title": "Bob takes one very slow bar initially",
+    "tags": [
+      "adversarial",
+      "edge"
+    ],
+    "input": "10\n1 1 1 1 1 1 1 1 1 1000",
+    "expected_output": "9 1",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "Symmetrical to the previous case, ensures the logic is not biased towards one player. Alice gets to consume almost everything.",
+    "time_complexity_trigger": "greedy logic"
+  },
+  {
+    "id": 33,
+    "title": "Leapfrogging accumulated times with alternating values",
+    "tags": [
+      "pathological"
+    ],
+    "input": "9\n100 1 100 1 100 1 100 1 100",
+    "expected_output": "5 4",
+    "size_bytes": 32,
+    "difficulty_estimate": "medium",
+    "why_included": "This case tests the simulation's correctness when the player with less accumulated time frequently changes, ensuring the greedy choice is made correctly at each step.",
+    "time_complexity_trigger": "correct loop invariant"
+  },
+  {
+    "id": 34,
+    "title": "Multiple perfect ties on accumulated time",
+    "tags": [
+      "edge",
+      "pathological"
+    ],
+    "input": "7\n10 20 5 100 5 10 20",
+    "expected_output": "4 3",
+    "size_bytes": 22,
+    "difficulty_estimate": "hard",
+    "why_included": "Tests the tie-breaking condition (`<=`) multiple times mid-game, not just at the end. Correct handling is crucial for this case.",
+    "time_complexity_trigger": "tie-breaking logic"
+  },
+  {
+    "id": 35,
+    "title": "Large random case near maximum N",
+    "tags": [
+      "random",
+      "stress"
+    ],
+    "input":"99998\n6 343 680 ... [and so on for 99,998 total numbers]" ,
+    "expected_output": "49953 50045",
+    "size_bytes": 444927,
+    "difficulty_estimate": "medium",
+    "why_included": "A general stress test with large, pseudo-random data to verify performance and correctness on typical large inputs. Seed: 1337.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 36,
+    "title": "Palindromic sequence of chocolate times",
+    "tags": [
+      "edge",
+      "pathological"
+    ],
+    "input": "7\n123 456 789 10 789 456 123",
+    "expected_output": "4 3",
+    "size_bytes": 32,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a perfectly symmetrical input. The logic should consistently break ties in Alice's favor, leading her to claim the central bar.",
+    "time_complexity_trigger": "tie-breaking logic"
+  }
+],
+  
+  
   "problem_statement_link": "https://codeforces.com/problemset/problem/6/C",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 15884
