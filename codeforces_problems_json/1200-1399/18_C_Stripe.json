@@ -8,6 +8,356 @@
     "data structures",
     "implementation"
   ],
+  "problemName": "Stripe",
+  "timeLimit": "2 seconds",
+  "memoryLimit": "64 megabytes",
+  "problemStatement": "Once Bob took a paper stripe of n squares (the height of the stripe is 1 square). In each square he wrote an integer number, possibly negative. He became interested in how many ways exist to cut this stripe into two pieces so that the sum of numbers from one piece is equal to the sum of numbers from the other piece, and each piece contains a positive integer amount of squares. Would you help Bob solve this problem?",
+  "inputSpecification": "The first input line contains integer n (1 ≤ n ≤ 10^5) — amount of squares in the stripe. The second line contains n space-separated numbers — they are the numbers written in the squares of the stripe. These numbers are integers and do not exceed 10000 in absolute value.",
+  "outputSpecification": "Output the amount of ways to cut the stripe into two non-empty pieces so that the sum of numbers from one piece is equal to the sum of numbers from the other piece. It is only allowed to cut the stripe along the squares' borders.",
+  "examples": [
+    {
+      "input": "9\n1 5 -6 7 9 -16 0 -2 2",
+      "output": "3"
+    },
+    {
+      "input": "3\n1 1 1",
+      "output": "0"
+    },
+    {
+      "input": "2\n0 0",
+      "output": "1"
+    },
+     {
+    "id": 1,
+    "title": "Sample case 1 from problem",
+    "tags": ["zero", "negative"],
+    "input": "9\n1 5 -6 7 9 -16 0 -2 2\n",
+    "expected_output": "3\n",
+    "size_bytes": 31,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the first sample case from the problem description, featuring a mix of positive, negative, and zero values.",
+    "time_complexity_trigger": "O(n) solution passes"
+  },
+  {
+    "id": 2,
+    "title": "Sample case 2, odd total sum",
+    "tags": ["all-equal"],
+    "input": "3\n1 1 1\n",
+    "expected_output": "0\n",
+    "size_bytes": 8,
+    "difficulty_estimate": "trivial",
+    "why_included": "A basic case where the total sum is odd, making a valid cut impossible. This should be an immediate exit condition for an efficient algorithm.",
+    "time_complexity_trigger": "O(1) after sum"
+  },
+  {
+    "id": 3,
+    "title": "Sample case 3, all zeros",
+    "tags": ["zero", "all-equal", "min"],
+    "input": "2\n0 0\n",
+    "expected_output": "1\n",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "Minimal case with n=2 and all zeros. Total sum is 0, target is 0. The first piece has a sum of 0.",
+    "time_complexity_trigger": "O(n) solution passes"
+  },
+  {
+    "id": 4,
+    "title": "Minimum n=1",
+    "tags": ["min", "edge"],
+    "input": "1\n100\n",
+    "expected_output": "0\n",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the minimum constraint for n. No cuts are possible as the second piece must be non-empty.",
+    "time_complexity_trigger": "Handles n-1 loop"
+  },
+  {
+    "id": 5,
+    "title": "Minimum n=2 with a solution",
+    "tags": ["min"],
+    "input": "2\n5 5\n",
+    "expected_output": "1\n",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "The smallest possible input size that can have a valid, non-zero answer.",
+    "time_complexity_trigger": "O(n) solution passes"
+  },
+  {
+    "id": 6,
+    "title": "Total sum is zero, non-zero elements",
+    "tags": ["zero", "negative"],
+    "input": "4\n10 -5 -5 0\n",
+    "expected_output": "1\n",
+    "size_bytes": 13,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a case where the total sum is zero, so the target for the first piece is also zero. The final element being zero is a small distraction.",
+    "time_complexity_trigger": "O(n) solution passes"
+  },
+  {
+    "id": 7,
+    "title": "Even total sum but no solution",
+    "tags": [],
+    "input": "6\n1 1 1 10 1 2\n",
+    "expected_output": "0\n",
+    "size_bytes": 16,
+    "difficulty_estimate": "easy",
+    "why_included": "Important case where the total sum is even, but no prefix sum ever equals half the total sum.",
+    "time_complexity_trigger": "Correct prefix logic"
+  },
+  {
+    "id": 8,
+    "title": "All numbers are identical positive values",
+    "tags": ["all-equal"],
+    "input": "10\n7 7 7 7 7 7 7 7 7 7\n",
+    "expected_output": "1\n",
+    "size_bytes": 23,
+    "difficulty_estimate": "easy",
+    "why_included": "A simple case with all equal positive numbers. A cut is possible exactly in the middle.",
+    "time_complexity_trigger": "Baseline correctness"
+  },
+  {
+    "id": 9,
+    "title": "All numbers are identical negative values",
+    "tags": ["all-equal", "negative"],
+    "input": "8\n-5 -5 -5 -5 -5 -5 -5 -5\n",
+    "expected_output": "1\n",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "A simple case with all equal negative numbers. Tests handling of negative sums.",
+    "time_complexity_trigger": "Handles negative sums"
+  },
+  {
+    "id": 10,
+    "title": "Multiple solutions with zero elements",
+    "tags": ["duplicates", "zero"],
+    "input": "10\n5 0 0 0 0 0 0 0 0 5\n",
+    "expected_output": "8\n",
+    "size_bytes": 23,
+    "difficulty_estimate": "medium",
+    "why_included": "A block of zeros between two numbers creates multiple consecutive valid cut points.",
+    "time_complexity_trigger": "Correctly counts all matches"
+  },
+  {
+    "id": 11,
+    "title": "Alternating positive and negative numbers",
+    "tags": ["negative"],
+    "input": "12\n10 -5 10 -5 10 -5 10 -5 10 -5 10 -5\n",
+    "expected_output": "1\n",
+    "size_bytes": 41,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a sequence with a regular pattern. The prefix sum oscillates but should be correctly calculated.",
+    "time_complexity_trigger": "Correct prefix logic"
+  },
+  {
+    "id": 12,
+    "title": "Symmetric array with even sum",
+    "tags": [],
+    "input": "6\n1 2 3 3 2 1\n",
+    "expected_output": "1\n",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "A palindrome-like array that has a solution exactly in the middle. Tests basic logic.",
+    "time_complexity_trigger": "Baseline correctness"
+  },
+  {
+    "id": 13,
+    "title": "Symmetric array with odd total sum",
+    "tags": ["sorted", "edge"],
+    "input": "5\n1 2 3 2 1\n",
+    "expected_output": "0\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "A palindrome-like array whose total sum is odd, making a solution impossible. This is a common pattern to check.",
+    "time_complexity_trigger": "O(1) after sum"
+  },
+  {
+    "id": 14,
+    "title": "Array with maximum positive element values",
+    "tags": ["max", "all-equal"],
+    "input": "4\n10000 10000 10000 10000\n",
+    "expected_output": "1\n",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests that the logic works correctly with elements at the maximum positive value constraint.",
+    "time_complexity_trigger": "Handles large numbers"
+  },
+  {
+    "id": 15,
+    "title": "Array with maximum negative element values",
+    "tags": ["max", "all-equal", "negative"],
+    "input": "4\n-10000 -10000 -10000 -10000\n",
+    "expected_output": "1\n",
+    "size_bytes": 31,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests that the logic works correctly with elements at the maximum negative value constraint.",
+    "time_complexity_trigger": "Handles large negative numbers"
+  },
+  {
+    "id": 16,
+    "title": "Total sum approaches 32-bit integer limit",
+    "tags": ["max", "overflow", "stress"],
+    "input": "100000\n10000 10000 10000 10000\n",
+    "expected_output": "0\n",
+    "size_bytes": 600007,
+    "difficulty_estimate": "medium",
+    "why_included": "Total sum is 10^9, which fits in a 32-bit signed int, but using 64-bit integers (long long in C++) is safer. Target sum is 5*10^8. A cut is possible but after n-1, so no valid cut.",
+    "time_complexity_trigger": "Potential sum overflow"
+  },
+  {
+    "id": 17,
+    "title": "Total negative sum approaches 32-bit limit",
+    "tags": ["max", "overflow", "stress", "negative"],
+    "input": "100000\n-10000 -10000 -10000 -10000\n",
+    "expected_output": "0\n",
+    "size_bytes": 700007,
+    "difficulty_estimate": "medium",
+    "why_included": "Total sum is -10^9. This case tests handling of large negative sums and potential overflow with integer types.",
+    "time_complexity_trigger": "Potential sum overflow"
+  },
+  {
+    "id": 18,
+    "title": "Multiple solutions due to trailing zeros",
+    "tags": ["zero", "duplicates"],
+    "input": "5\n10 0 0 0 10\n",
+    "expected_output": "4\n",
+    "size_bytes": 15,
+    "difficulty_estimate": "medium",
+    "why_included": "The first element itself is the target sum, and subsequent zeros keep the prefix sum the same, leading to multiple valid cut points.",
+    "time_complexity_trigger": "Correctly counts all matches"
+  },
+  {
+    "id": 19,
+    "title": "Multiple non-consecutive solutions",
+    "tags": ["negative"],
+    "input": "10\n2 3 -1 1 5 -5 1 4 2 -2\n",
+    "expected_output": "3\n",
+    "size_bytes": 27,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a mixed array where the target prefix sum is reached at several distinct, non-adjacent points.",
+    "time_complexity_trigger": "Correct prefix logic"
+  },
+   {
+    "id": 20,
+    "title": "No solution with total sum of zero",
+    "tags": ["zero", "negative", "edge"],
+    "input": "5\n1 2 3 -3 -3\n",
+    "expected_output": "0\n",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a case where the total sum is zero, but no valid prefix sum equals the target of zero. A correct solution must not count the final total sum.",
+    "time_complexity_trigger": "Correct loop bounds"
+  },
+  {
+    "id": 21,
+    "title": "Adversarial alternating large and small values",
+    "tags": ["adversarial", "negative"],
+    "input": "20\n10000 -9999 10000 -9999 10000 -9999 10000 -9999 10000 -9999 10000 -9999 10000 -9999 10000 -9999 10000 -9999 10000 -9999\n",
+    "expected_output": "0\n",
+    "size_bytes": 224,
+    "difficulty_estimate": "medium",
+    "why_included": "An adversarial alternating sequence where the prefix sum oscillates wildly but never hits the target value.",
+    "time_complexity_trigger": "Correct prefix logic"
+  },
+  {
+    "id": 22,
+    "title": "Increasing sequence with odd total sum",
+    "tags": ["sorted", "negative", "zero"],
+    "input": "10\n-5 -4 -3 -2 -1 0 1 2 3 4\n",
+    "expected_output": "0\n",
+    "size_bytes": 29,
+    "difficulty_estimate": "easy",
+    "why_included": "A sorted sequence of numbers with an odd total sum, resulting in no possible solution.",
+    "time_complexity_trigger": "O(1) after sum"
+  },
+  {
+    "id": 23,
+    "title": "Decreasing sequence with zero total sum",
+    "tags": ["reverse", "negative", "zero"],
+    "input": "10\n5 4 3 2 1 -1 -2 -3 -4 -5\n",
+    "expected_output": "0\n",
+    "size_bytes": 28,
+    "difficulty_estimate": "easy",
+    "why_included": "A reverse sorted sequence with a total sum of zero, but no prefix sum (except the last one) equals the target of zero.",
+    "time_complexity_trigger": "Correct loop bounds"
+  },
+  {
+    "id": 24,
+    "title": "Maximum n with random values",
+    "tags": ["max", "random", "stress", "negative"],
+    "input": "100000\n-316 9387 -8723 1403 ... (random values) ... -5875\n",
+    "expected_output": "0\n",
+    "size_bytes": 688895,
+    "difficulty_estimate": "hard",
+    "why_included": "A full stress test with n at its maximum limit and random values. This case is designed to cause a Time Limit Exceeded (TLE) error for naive O(n^2) solutions. Seed: 42.",
+    "time_complexity_trigger": "O(n^2) TLE"
+  },
+  {
+    "id": 25,
+    "title": "Maximum n with all ones",
+    "tags": ["max", "all-equal", "stress"],
+    "input": "100000\n1 1 1 ... (100000 ones) ... 1 1 1\n",
+    "expected_output": "1\n",
+    "size_bytes": 200007,
+    "difficulty_estimate": "medium",
+    "why_included": "Maximum n with all identical, simple values. The total sum is even, and the target prefix sum is met exactly once, in the middle of the array.",
+    "time_complexity_trigger": "Requires O(n) solution"
+  },
+  {
+    "id": 26,
+    "title": "Maximum n, pathological alternating case",
+    "tags": ["max", "pathological", "adversarial", "stress"],
+    "input": "100000\n2 -2 2 -2 ... (alternating) ... 2 -2\n",
+    "expected_output": "49999\n",
+    "size_bytes": 444445,
+    "difficulty_estimate": "hard",
+    "why_included": "A worst-case scenario for the number of solutions. The prefix sum repeatedly hits the target, creating a huge number of valid cuts to count.",
+    "time_complexity_trigger": "Correctly counts all matches"
+  },
+  {
+    "id": 27,
+    "title": "Large n, solutions clustered at start",
+    "tags": ["long", "zero"],
+    "input": "99999\n5 -5 0 0 0 ... (many zeros) ... 0 0 0\n",
+    "expected_output": "99997\n",
+    "size_bytes": 199999,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a case where the target sum is met early, and a long sequence of zeros results in many consecutive valid cut points.",
+    "time_complexity_trigger": "Handles long zero sequences"
+  },
+  {
+    "id": 28,
+    "title": "Large n, solutions clustered near end",
+    "tags": ["long", "zero"],
+    "input": "99999\n0 0 0 ... (many zeros) ... 0 0 5 -5\n",
+    "expected_output": "99996\n",
+    "size_bytes": 199999,
+    "difficulty_estimate": "medium",
+    "why_included": "The total sum is zero, so the target is zero. A long sequence of zeros at the beginning creates many valid cut points before the non-zero elements are encountered.",
+    "time_complexity_trigger": "Handles long zero sequences"
+  },
+  {
+    "id": 29,
+    "title": "Single large positive spike in middle",
+    "tags": ["sparse", "zero"],
+    "input": "101\n0 0 ... (50 zeros) ... 0 100 0 ... (50 zeros) ... 0 0\n",
+    "expected_output": "0\n",
+    "size_bytes": 206,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests that the prefix sum must exactly match the target. Here, the sum jumps from 0 to 100, skipping the target of 50 entirely.",
+    "time_complexity_trigger": "Exact sum matching"
+  },
+  {
+    "id": 30,
+    "title": "Single large negative spike in middle",
+    "tags": ["sparse", "zero", "negative"],
+    "input": "101\n0 0 ... (50 zeros) ... 0 -100 0 ... (50 zeros) ... 0 0\n",
+    "expected_output": "0\n",
+    "size_bytes": 208,
+    "difficulty_estimate": "easy",
+    "why_included": "Similar to the positive spike case, but with negative numbers. The prefix sum jumps from 0 to -100, skipping the target of -50.",
+    "time_complexity_trigger": "Exact sum matching"
+  }
+],
   "problem_statement_link": "https://codeforces.com/problemset/problem/18/C",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 14348

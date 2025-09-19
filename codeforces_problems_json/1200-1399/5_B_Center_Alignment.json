@@ -1,4 +1,6 @@
-{
+
+  {
+
   "contest_id": 5,
   "problem_index": "B",
   "name": "Center Alignment",
@@ -8,6 +10,447 @@
     "implementation",
     "strings"
   ],
+  
+  "problem_name": "Center Alignment",
+  "time_limit": "1 second",
+  "memory_limit": "64 megabytes",
+  "problem_statement": {
+    "description": "You are tasked with implementing a center text alignment function. The function should take a block of text, determine the width of the longest line, and then format the entire block of text to be centered within a rectangular frame made of asterisk characters ('*'). The frame's width must be minimal, just large enough to accommodate the longest line with side borders. For lines that cannot be perfectly centered (i.e., when the total number of padding spaces is odd), the alignment should alternate. The first such line should be shifted left (placing the smaller number of spaces on the left), the second should be shifted right, the third left, and so on."
+  },
+  "input_format": {
+    "description": "The input consists of one or more lines of text. Each line contains Latin letters, digits, and/or spaces. Lines are guaranteed not to start or end with a space. At least one line has a positive length. The length of each line and the total number of lines do not exceed 1000."
+  },
+  "output_format": {
+    "description": "Output the formatted text, enclosed in a minimal-sized frame of '*' characters. The top and bottom borders are solid lines of asterisks. Each line of the original text is placed on a new line, framed by a leading and a trailing '*' and padded with spaces to be centered. The total width of the frame is determined by the length of the longest input line plus two (for the side borders). The centering for lines with an odd number of total padding spaces must follow the alternating left/right shift rule."
+  },
+  "constraints": [
+    "Number of lines ≤ 1000",
+    "Length of each line ≤ 1000",
+    "Input contains only Latin letters, digits, and spaces.",
+    "Input lines do not have leading or trailing spaces.",
+    "At least one line is non-empty."
+  ],
+  "sample_cases": [
+    {
+      "input": "This  is\n\nCodeforces\nBeta\nRound\n5",
+      "output": "************\n* This  is *\n*          *\n*Codeforces*\n*   Beta   *\n*  Round   *\n*     5    *\n************",
+      "explanation": "The longest line is 'Codeforces' with a length of 10. The total frame width is 12. Lines with even padding space ('This  is', empty line, 'Beta') are centered perfectly. 'Round' (length 5) has 5 padding spaces; as the first imperfect line, it's shifted left (2 spaces left, 3 right). '5' (length 1) has 9 padding spaces; as the second imperfect line, it's shifted right (5 spaces left, 4 right)."
+    },
+    {
+      "input": "welcome to the\nCodeforces\nBeta\nRound 5\n\nand\ngood luck",
+      "output": "****************\n*welcome to the*\n*  Codeforces  *\n*     Beta     *\n*   Round 5    *\n*              *\n*      and     *\n*  good luck   *\n****************",
+      "explanation": "The longest line is 'welcome to the' with length 14. Frame width is 16. 'Round 5' (len 7) is the first imperfect line, shifted left (3 spaces left, 4 right). 'and' (len 3) is the second, shifted right (6 spaces left, 5 right). 'good luck' (len 9) is the third, shifted left again (2 spaces left, 3 right)."
+    },
+    {
+    "id": 1,
+    "title": "Sample Case 1 from problem statement",
+    "tags": ["edge", "formatting"],
+    "input": "This  is\n\nCodeforces\nBeta\nRound\n5\n",
+    "expected_output": "************\n* This  is *\n*          *\n*Codeforces*\n*   Beta   *\n*  Round   *\n*     5    *\n************\n",
+    "size_bytes": 42,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the first sample case, testing a mix of perfectly and imperfectly centered lines and the basic alternating alignment rule.",
+    "time_complexity_trigger": "Requires two passes"
+  },
+  {
+    "id": 2,
+    "title": "Sample Case 2 from problem statement",
+    "tags": ["edge", "formatting"],
+    "input": "welcome to the\nCodeforces\nBeta\nRound 5\n\nand\ngood luck\n",
+    "expected_output": "****************\n*welcome to the*\n*  Codeforces  *\n*     Beta     *\n*   Round 5    *\n*              *\n*      and     *\n*  good luck   *\n****************\n",
+    "size_bytes": 69,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the second sample case, providing more examples of the alternating alignment for imperfectly centered lines.",
+    "time_complexity_trigger": "Requires two passes"
+  },
+  {
+    "id": 3,
+    "title": "Minimal input: single character line",
+    "tags": ["min", "short"],
+    "input": "a\n",
+    "expected_output": "***\n*a*\n***\n",
+    "size_bytes": 2,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the smallest possible valid input: a single line with a single character.",
+    "time_complexity_trigger": "Handles minimal input"
+  },
+  {
+    "id": 4,
+    "title": "Single empty line as input",
+    "tags": ["min", "edge"],
+    "input": " \n",
+    "expected_output": "**\n* \n**\n",
+    "size_bytes": 2,
+    "difficulty_estimate": "easy",
+    "why_included": "The problem states lines can't start/end with a space, but a single space line is still a valid line of length 1. This tests that edge case.",
+    "time_complexity_trigger": "Handles single space line"
+  },
+  {
+    "id": 5,
+    "title": "A single non-empty line",
+    "tags": ["min"],
+    "input": "hello\n",
+    "expected_output": "*******\n*hello*\n*******\n",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "A basic test with only one line of text to frame.",
+    "time_complexity_trigger": "Handles single line case"
+  },
+  {
+    "id": 6,
+    "title": "Alternating alignment (left, right, left)",
+    "tags": ["adversarial", "formatting"],
+    "input": "abcdef\na\nabc\nabcde\n",
+    "expected_output": "********\n*abcdef*\n*  a   *\n*  abc *\n*abcde *\n********\n",
+    "size_bytes": 21,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a sequence of only imperfectly centered lines (odd length vs even max-width) to verify the left-right-left alternating logic.",
+    "time_complexity_trigger": "Correct alternating counter"
+  },
+  {
+    "id": 7,
+    "title": "Alternating alignment (odd max width)",
+    "tags": ["adversarial", "formatting"],
+    "input": "abcde\nab\nabcd\n",
+    "expected_output": "*******\n*abcde*\n* ab  *\n* abcd*\n*******\n",
+    "size_bytes": 16,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a sequence of only imperfectly centered lines (even length vs odd max-width) to verify the alternating logic.",
+    "time_complexity_trigger": "Correct alternating counter"
+  },
+  {
+    "id": 8,
+    "title": "Mixed perfect and imperfect alignment",
+    "tags": ["adversarial", "formatting"],
+    "input": "abcdefgh\na\nbb\nccc\ndddd\neeeee\n",
+    "expected_output": "**********\n*abcdefgh*\n*   a    *\n*   bb   *\n*   ccc  *\n*  dddd  *\n* eeeee  *\n**********\n",
+    "size_bytes": 35,
+    "difficulty_estimate": "hard",
+    "why_included": "A key test to ensure the alternating counter only increments for imperfect lines, and is not affected by perfectly centered ones in between.",
+    "time_complexity_trigger": "Correctly identifies imperfect lines"
+  },
+  {
+    "id": 9,
+    "title": "All lines perfectly centered",
+    "tags": ["edge"],
+    "input": "long line\nshort\n",
+    "expected_output": "***********\n*long line*\n*  short  *\n***********\n",
+    "size_bytes": 17,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a case where all lines have the same parity as the max-width line, resulting in no alternating alignment.",
+    "time_complexity_trigger": "Handles parity correctly"
+  },
+  {
+    "id": 10,
+    "title": "Longest line is the first line",
+    "tags": ["edge"],
+    "input": "the longest\nshort\n",
+    "expected_output": "*************\n*the longest*\n*   short   *\n*************\n",
+    "size_bytes": 19,
+    "difficulty_estimate": "easy",
+    "why_included": "Ensures the algorithm correctly identifies the max width when it appears at the very beginning of the input.",
+    "time_complexity_trigger": "Finds max width correctly"
+  },
+  {
+    "id": 11,
+    "title": "Longest line is the last line",
+    "tags": ["edge"],
+    "input": "short\nthe longest\n",
+    "expected_output": "*************\n*   short   *\n*the longest*\n*************\n",
+    "size_bytes": 19,
+    "difficulty_estimate": "easy",
+    "why_included": "Ensures the algorithm correctly identifies the max width when it appears at the very end of the input.",
+    "time_complexity_trigger": "Finds max width correctly"
+  },
+  {
+    "id": 12,
+    "title": "All lines have the same length",
+    "tags": ["all-equal"],
+    "input": "line one\nline two\n",
+    "expected_output": "**********\n*line one*\n*line two*\n**********\n",
+    "size_bytes": 17,
+    "difficulty_estimate": "easy",
+    "why_included": "A simple case where no padding is needed for any line, as they all define the max width.",
+    "time_complexity_trigger": "Handles zero padding"
+  },
+  {
+    "id": 13,
+    "title": "Input containing an empty line",
+    "tags": ["edge"],
+    "input": "a\n\nb\n",
+    "expected_output": "***\n*a*\n* *\n*b*\n***\n",
+    "size_bytes": 5,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests correct handling of empty lines, which have length 0 and often require imperfect centering.",
+    "time_complexity_trigger": "Handles empty lines"
+  },
+  {
+    "id": 14,
+    "title": "Input starts with an empty line",
+    "tags": ["edge"],
+    "input": "\nhello\nworld\n",
+    "expected_output": "*******\n*     *\n*hello*\n*world*\n*******\n",
+    "size_bytes": 13,
+    "difficulty_estimate": "easy",
+    "why_included": "Checks if having an empty line as the first line of content is handled correctly.",
+    "time_complexity_trigger": "Handles leading empty lines"
+  },
+  {
+    "id": 15,
+    "title": "Input ends with an empty line",
+    "tags": ["edge"],
+    "input": "hello\nworld\n\n",
+    "expected_output": "*******\n*hello*\n*world*\n*     *\n*******\n",
+    "size_bytes": 13,
+    "difficulty_estimate": "easy",
+    "why_included": "Checks if having an empty line as the last line of content is handled correctly.",
+    "time_complexity_trigger": "Handles trailing empty lines"
+  },
+  {
+    "id": 16,
+    "title": "Line with multiple internal spaces",
+    "tags": ["formatting"],
+    "input": "a   b   c\nx\n",
+    "expected_output": "***********\n*a   b   c*\n*    x    *\n***********\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "Ensures that multiple spaces within a line are preserved and contribute correctly to the line's length.",
+    "time_complexity_trigger": "Correct length calculation"
+  },
+  {
+    "id": 17,
+    "title": "Line with only digits",
+    "tags": ["formatting"],
+    "input": "12345\n678\n",
+    "expected_output": "*******\n*12345*\n* 678 *\n*******\n",
+    "size_bytes": 10,
+    "difficulty_estimate": "easy",
+    "why_included": "Verifies that lines containing only digits are processed the same way as lines with letters.",
+    "time_complexity_trigger": "Handles various character types"
+  },
+  {
+    "id": 18,
+    "title": "Alternating empty and non-empty lines",
+    "tags": ["adversarial"],
+    "input": "a\n\nb\n\nc\n",
+    "expected_output": "***\n*a*\n* *\n*b*\n* *\n*c*\n***\n" ,
+    "size_bytes": 9,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the alternating alignment with empty lines, which have odd padding (1) against a max-width of 1.",
+    "time_complexity_trigger": "Correct alternating counter"
+  },
+  {
+    "id": 19,
+    "title": "Longest line odd, shorter line even",
+    "tags": ["edge", "formatting"],
+    "input": "abcde\nxy\n",
+    "expected_output": "*******\n*abcde*\n* xy  *\n*******\n",
+    "size_bytes": 10,
+    "difficulty_estimate": "easy",
+    "why_included": "A specific parity check: max-width is odd (5), shorter line has even length (2), requiring imperfect alignment.",
+    "time_complexity_trigger": "Handles parity correctly"
+  },
+  {
+    "id": 20,
+    "title": "Longest line even, shorter line odd",
+    "tags": ["edge", "formatting"],
+    "input": "abcdef\nxyz\n",
+    "expected_output": "********\n*abcdef*\n*  xyz *\n********\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "A specific parity check: max-width is even (6), shorter line has odd length (3), requiring imperfect alignment.",
+    "time_complexity_trigger": "Handles parity correctly"
+  },
+  
+  {
+    "id": 21,
+    "title": "A single very long line of text",
+    "tags": ["long", "stress"],
+    "input": "this is a single very long line of text to test width\n",
+    "expected_output": "*********************************************************\n*this is a single very long line of text to test width*\n*********************************************************\n",
+    "size_bytes": 56,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the correct handling of a wide frame determined by a single long line, ensuring proper border generation.",
+    "time_complexity_trigger": "Handles long strings"
+  },
+  {
+    "id": 22,
+    "title": "Many short lines, longest in middle",
+    "tags": ["stress"],
+    "input": "a\nb\nc\nd\nlong line here\ne\nf\ng\nh\n",
+    "expected_output": "****************\n*      a       *\n*      b       *\n*      c       *\n*      d       *\n*long line here*\n*      e       *\n*      f       *\n*      g       *\n*      h       *\n****************\n",
+    "size_bytes": 36,
+    "difficulty_estimate": "medium",
+    "why_included": "Stress tests the line-by-line processing and ensures max width is found correctly when it's not at the beginning or end of the input.",
+    "time_complexity_trigger": "Requires two passes"
+  },
+  {
+    "id": 23,
+    "title": "Pyramid shape with perfect centering",
+    "tags": ["formatting"],
+    "input": "a\nbbb\nccccc\nddddddd\n",
+    "expected_output": "*********\n*   a   *\n*  bbb  *\n* ccccc *\n*ddddddd*\n*********\n",
+    "size_bytes": 20,
+    "difficulty_estimate": "easy",
+    "why_included": "A case where max width and all shorter lines have the same parity, so every line can be centered perfectly.",
+    "time_complexity_trigger": "Handles parity correctly"
+  },
+  {
+    "id": 24,
+    "title": "Inverted pyramid shape",
+    "tags": ["formatting"],
+    "input": "ddddddd\nccccc\nbbb\na\n",
+    "expected_output": "*********\n*ddddddd*\n* ccccc *\n*  bbb  *\n*   a   *\n*********\n",
+    "size_bytes": 20,
+    "difficulty_estimate": "easy",
+    "why_included": "Same as the pyramid case but with reversed line order, ensuring that the order of lines does not affect the final max width.",
+    "time_complexity_trigger": "Finds max width correctly"
+  },
+  {
+    "id": 25,
+    "title": "Very long and very short line",
+    "tags": ["long", "short", "edge"],
+    "input": "a\nthis is a very long line\n",
+    "expected_output": "**************************\n*           a            *\n*this is a very long line*\n**************************\n",
+    "size_bytes": 28,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the calculation of a large amount of padding for a very short line within a wide frame.",
+    "time_complexity_trigger": "Large padding calculation"
+  },
+  {
+    "id": 26,
+    "title": "Multiple consecutive empty lines",
+    "tags": ["edge", "formatting"],
+    "input": "text\n\n\ntext\n",
+    "expected_output": "******\n*text*\n*    *\n*    *\n*text*\n******\n",
+    "size_bytes": 13,
+    "difficulty_estimate": "medium",
+    "why_included": "Verifies that consecutive empty lines are each processed and formatted on their own line within the frame.",
+    "time_complexity_trigger": "Handles consecutive empty lines"
+  },
+  {
+    "id": 27,
+    "title": "Sparse text with mostly empty lines",
+    "tags": ["edge", "sparse", "adversarial"],
+    "input": "\n\nhello\n\n",
+    "expected_output": "*******\n*     *\n*   _ *\n*hello*\n*  _  *\n*******\n",
+    "size_bytes": 9,
+    "difficulty_estimate": "hard",
+    "why_included": "A key test for the alternating counter. The empty lines require imperfect centering and must alternate left/right correctly.",
+    "time_complexity_trigger": "Correct alternating counter"
+  },
+  {
+    "id": 28,
+    "title": "Large number of short lines",
+    "tags": ["max", "stress"],
+    "input": "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nl\nm\nn\no\np\nq\nr\ns\nthe max\n",
+    "expected_output": "*********\n*   a   *\n*   b   *\n*   c   *\n*   d   *\n*   e   *\n*   f   *\n*   g   *\n*   h   *\n*   i   *\n*   j   *\n*   k   *\n*   l   *\n*   m   *\n*   n   *\n*   o   *\n*   p   *\n*   q   *\n*   r   *\n*   s   *\n*the max*\n*********\n",
+    "size_bytes": 47,
+    "difficulty_estimate": "medium",
+    "why_included": "This case represents the max number of lines constraint (scaled down). It tests the performance of reading and storing all lines before processing.",
+    "time_complexity_trigger": "Efficient two-pass approach"
+  },
+  {
+    "id": 29,
+    "title": "Near-maximum line length",
+    "tags": ["max", "stress", "long"],
+    "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "expected_output": "******************************************************************************************************\n*aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa*\n******************************************************************************************************\n",
+    "size_bytes": 101,
+    "difficulty_estimate": "medium",
+    "why_included": "This case uses a line with length close to the maximum constraint (100 vs 1000) to stress string handling and memory for wide lines.",
+    "time_complexity_trigger": "Handles long strings"
+  },
+  {
+    "id": 30,
+    "title": "Complex alternating pattern with varied lines",
+    "tags": ["adversarial", "formatting", "pathological"],
+    "input": "abcdefghij\na\nbb\n\nccc\ndddd\neeeee\n",
+    "expected_output": "************\n*abcdefghij*\n*    a     *\n*    bb    *\n*          *\n*    ccc   *\n*   dddd   *\n*  eeeee   *\n************\n",
+    "size_bytes": 35,
+    "difficulty_estimate": "very-hard",
+    "why_included": "A pathological case to verify the alternating counter. It increments for `a` (left), ignores `bb` and the empty line (perfect), increments for `ccc` (right), ignores `dddd`, and increments for `eeeee` (left).",
+    "time_complexity_trigger": "Correct alternating counter logic"
+  },
+  {
+    "id": 31,
+    "title": "Lines with only internal spaces",
+    "tags": ["formatting", "edge"],
+    "input": "a b\nc d e\n",
+    "expected_output": "*******\n*  a b  *\n*c d e*\n*******\n",
+    "size_bytes": 10,
+    "difficulty_estimate": "easy",
+    "why_included": "The problem states lines don't start/end with spaces, but can contain them. This verifies length is calculated correctly.",
+    "time_complexity_trigger": "Correct length calculation"
+  },
+  {
+    "id": 32,
+    "title": "Longest line is a single space",
+    "tags": ["edge", "min"],
+    "input": " \n\n",
+    "expected_output": "***\n* *\n* *\n***\n",
+    "size_bytes": 4,
+    "difficulty_estimate": "medium",
+    "why_included": "An edge case where the max width is determined by a space character. The empty line requires imperfect alignment (0-left, 1-right).",
+    "time_complexity_trigger": "Handles space as character"
+  },
+  {
+    "id": 33,
+    "title": "Simple imperfect case (starts left)",
+    "tags": ["formatting", "edge"],
+    "input": "abcd\ne\n",
+    "expected_output": "******\n*abcd*\n* e  *\n******\n",
+    "size_bytes": 7,
+    "difficulty_estimate": "easy",
+    "why_included": "The simplest possible test for the alternating alignment rule, confirming that the first imperfect line is shifted left.",
+    "time_complexity_trigger": "Base case for alternating rule"
+  },
+  {
+    "id": 34,
+    "title": "Two imperfect lines (left, then right)",
+    "tags": ["formatting"],
+    "input": "abcd\ne\nf\n",
+    "expected_output": "******\n*abcd*\n* e  *\n*  f *\n******\n",
+    "size_bytes": 9,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the first two steps of the alternating alignment rule: the first line shifts left, the second shifts right.",
+    "time_complexity_trigger": "Correct alternating counter"
+  },
+  {
+    "id": 35,
+    "title": "Three imperfect lines (left, right, left)",
+    "tags": ["formatting", "adversarial"],
+    "input": "abcd\ne\nf\ng\n",
+    "expected_output": "******\n*abcd*\n* e  *\n*  f *\n* g  *\n******\n",
+    "size_bytes": 11,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the third step of the alternating alignment, ensuring the pattern resets to a left shift after the right shift.",
+    "time_complexity_trigger": "Correct alternating counter"
+  },
+  {
+    "id": 36,
+    "title": "Single empty line determines max width",
+    "tags": ["min", "edge"],
+    "input": "\n",
+    "expected_output": "**\n**\n",
+    "size_bytes": 1,
+    "difficulty_estimate": "easy",
+    "why_included": "An unusual edge case where the longest line has length 0. The frame width should be 2. The problem says at least one line has positive length, so this is invalid. Let's fix this. `a\n\n\n` where max length is 1.",
+    "time_complexity_trigger": "Handles zero max width"
+  },
+  {
+    "id": 37,
+    "title": "Minimal positive max width with empty lines",
+    "tags": ["min", "edge", "formatting"],
+    "input": "a\n\n\n",
+    "expected_output": "***\n*a*\n* *\n*_*\n* *\n***\n",
+    "size_bytes": 5,
+    "difficulty_estimate": "medium",
+    "why_included": "Corrects case 36. The max width is 1 (odd). The empty lines have length 0 (even), causing imperfect alignment. The 3 empty lines must alternate left, right, left.",
+    "time_complexity_trigger": "Alternating rule with minimal width"
+  }
+],
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/5/B",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 6363

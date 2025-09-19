@@ -9,6 +9,424 @@
     "implementation",
     "math"
   ],
+
+  "problem_name": "Hexadecimal's Numbers",
+  "description": "A virus, Megabyte, loads natural numbers from 1 to `n` into his sister Hexadecimal's memory. However, she only perceives numbers whose decimal representation consists solely of the digits '0' and '1'. The task is to count how many numbers from 1 to `n` (inclusive) were successfully loaded.",
+  "constraints": {
+    "time_limit": "1 second",
+    "memory_limit": "64 megabytes",
+    "n": "1 <= n <= 10^9"
+  },
+  "input_spec": {
+    "format": "A single line containing one integer `n`."
+  },
+  "output_spec": {
+    "format": "A single line containing the count of the valid numbers."
+  },
+  "notes": [
+    "A number is considered valid if its standard decimal representation contains only the digits 0 and 1.",
+    "For example, 1, 10, 11, 100 are valid numbers. 2, 12, 21, 102 are not."
+  ],
+  "examples": [
+    {
+      "input": "10",
+      "output": "2",
+      "explanation": "The valid numbers between 1 and 10 are 1 and 10. The count is 2."
+    },
+    {
+      "input": "100",
+      "output": "4",
+      "explanation": "The valid numbers between 1 and 100 are 1, 10, 11, and 100. The count is 4."
+    },
+     {
+    "id": 1,
+    "title": "Minimum value n=1",
+    "tags": ["min", "edge"],
+    "input": "1\n",
+    "expected_output": "1",
+    "size_bytes": 2,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the minimum constraint n=1. Only the number 1 is valid.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 2,
+    "title": "Simple value n=2",
+    "tags": ["short"],
+    "input": "2\n",
+    "expected_output": "1",
+    "size_bytes": 2,
+    "difficulty_estimate": "trivial",
+    "why_included": "A simple case where the count is the same as n=1, ensuring numbers like 2 are correctly excluded.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 3,
+    "title": "Value below first two-digit valid number",
+    "tags": ["edge"],
+    "input": "9\n",
+    "expected_output": "1",
+    "size_bytes": 2,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the range just before the second valid number (10) is introduced.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 4,
+    "title": "Problem example n=10",
+    "tags": ["trivial", "edge"],
+    "input": "10\n",
+    "expected_output": "2",
+    "size_bytes": 3,
+    "difficulty_estimate": "trivial",
+    "why_included": "The example from the problem statement. Tests a boundary where n itself is a valid number (10).",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 5,
+    "title": "Boundary value, is a valid number",
+    "tags": ["edge"],
+    "input": "11\n",
+    "expected_output": "3",
+    "size_bytes": 3,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests a boundary where n itself is a valid number. The count should include n (1, 10, 11).",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 6,
+    "title": "Boundary before three-digit valid numbers",
+    "tags": ["edge"],
+    "input": "99\n",
+    "expected_output": "3",
+    "size_bytes": 3,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the boundary right before the next set of valid numbers (starting at 100) begins.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 7,
+    "title": "Boundary value, n=100",
+    "tags": ["edge"],
+    "input": "100\n",
+    "expected_output": "4",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the first three-digit valid number, which is also a power of 10.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 8,
+    "title": "Boundary value, n=101",
+    "tags": ["edge"],
+    "input": "101\n",
+    "expected_output": "5",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests another boundary where n is a valid number immediately following a power of 10.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 9,
+    "title": "Boundary value, n=111",
+    "tags": ["edge"],
+    "input": "111\n",
+    "expected_output": "7",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the case where n is a valid number composed of all ones.",
+    "time_complexity_trigger": "correctness check"
+  },
+  
+    
+  {
+    "id": 10,
+    "title": "Value is a valid number n=1000",
+    "tags": ["edge"],
+    "input": "1000\n",
+    "expected_output": "8",
+    "size_bytes": 5,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a round number which is also a valid number. The count includes 1, 10, 11, 100, 101, 110, 111, and 1000.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 11,
+    "title": "Value just below a valid number n=999",
+    "tags": ["edge"],
+    "input": "999\n",
+    "expected_output": "7",
+    "size_bytes": 4,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary right before the valid number 1000. All valid numbers up to this point have 3 or fewer digits.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 12,
+    "title": "Value is all ones n=1111",
+    "tags": ["edge"],
+    "input": "1111\n",
+    "expected_output": "15",
+    "size_bytes": 5,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a boundary where n is the largest valid number with 4 digits. The count should be 2^4 - 1 = 15.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 13,
+    "title": "Value just below all ones n=1110",
+    "tags": ["edge"],
+    "input": "1110\n",
+    "expected_output": "14",
+    "size_bytes": 5,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary just before a number of all ones. The number 1111 is excluded.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 14,
+    "title": "Boundary at 10000",
+    "tags": ["edge"],
+    "input": "10000\n",
+    "expected_output": "16",
+    "size_bytes": 6,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a power of 10 which is a valid number, starting the 5-digit valid numbers.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 15,
+    "title": "Boundary just below 10000",
+    "tags": ["edge"],
+    "input": "9999\n",
+    "expected_output": "15",
+    "size_bytes": 5,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary before 5-digit valid numbers begin. Count is all valid numbers with 4 or fewer digits.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 16,
+    "title": "Boundary with n of all ones n=111111",
+    "tags": ["edge"],
+    "input": "111111\n",
+    "expected_output": "63",
+    "size_bytes": 7,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a larger number composed of all ones. The count should be 2^6 - 1 = 63.",
+    "time_complexity_trigger": "recursion depth"
+  },
+  {
+    "id": 17,
+    "title": "Number with invalid digits n=200000",
+    "tags": ["edge"],
+    "input": "200000\n",
+    "expected_output": "63",
+    "size_bytes": 7,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a number containing an invalid digit. The count should be the same as the largest valid number smaller than n (which is 111111).",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 18,
+    "title": "Value is an alternating valid number",
+    "tags": ["edge"],
+    "input": "1010101\n",
+    "expected_output": "85",
+    "size_bytes": 8,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a specific valid number that is not a power of 10 or all ones.",
+    "time_complexity_trigger": "recursion correctness"
+  },
+  {
+    "id": 19,
+    "title": "Value just below alternating valid number",
+    "tags": ["edge"],
+    "input": "1010100\n",
+    "expected_output": "84",
+    "size_bytes": 8,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary right before the valid number 1010101.",
+    "time_complexity_trigger": "recursion correctness"
+  },
+  {
+    "id": 20,
+    "title": "Boundary with 8-digit all ones number",
+    "tags": ["edge"],
+    "input": "11111111\n",
+    "expected_output": "255",
+    "size_bytes": 9,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests an 8-digit boundary case. The count is 2^8 - 1 = 255.",
+    "time_complexity_trigger": "recursion depth"
+  },
+  {
+    "id": 21,
+    "title": "Large power of 10 like valid number",
+    "tags": ["edge"],
+    "input": "100000000\n",
+    "expected_output": "256",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a large valid number that marks the start of 9-digit valid numbers.",
+    "time_complexity_trigger": "recursion correctness"
+  },
+  {
+    "id": 22,
+    "title": "Boundary just below a large power of 10",
+    "tags": ["edge"],
+    "input": "99999999\n",
+    "expected_output": "255",
+    "size_bytes": 9,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary right before 9-digit valid numbers. The count should be all valid numbers with 8 or fewer digits.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 23,
+    "title": "Boundary with 9-digit all ones number",
+    "tags": ["edge", "long"],
+    "input": "111111111\n",
+    "expected_output": "511",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a 9-digit boundary case. The count is 2^9 - 1 = 511.",
+    "time_complexity_trigger": "recursion depth"
+  },
+  {
+    "id": 24,
+    "title": "Just below 9-digit all ones number",
+    "tags": ["edge", "long"],
+    "input": "111111110\n",
+    "expected_output": "510",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary just before the largest 9-digit valid number.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 25,
+    "title": "Large number with invalid digits",
+    "tags": ["long", "random"],
+    "input": "500000000\n",
+    "expected_output": "511",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a large number with invalid digits. The count should be all valid numbers with 9 or fewer digits, as 500M is larger than all of them.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 26,
+    "title": "Another large number with invalid digits",
+    "tags": ["long", "random"],
+    "input": "876543210\n",
+    "expected_output": "511",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Another test for a large number with invalid digits, confirming that the count is capped by the largest valid number smaller than n.",
+    "time_complexity_trigger": "correctness check"
+  },
+   {
+    "id": 27,
+    "title": "A specific large valid number",
+    "tags": ["long", "edge"],
+    "input": "101101101\n",
+    "expected_output": "365",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a specific valid number that is not a power of 10 or all ones to check the counting logic for an arbitrary valid boundary.",
+    "time_complexity_trigger": "recursion correctness"
+  },
+  {
+    "id": 28,
+    "title": "Boundary with 9-digit all ones number",
+    "tags": ["edge", "long"],
+    "input": "111111111\n",
+    "expected_output": "511",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a 9-digit boundary case where n is the largest valid number with 9 digits. The count is 2^9 - 1 = 511.",
+    "time_complexity_trigger": "recursion depth"
+  },
+  {
+    "id": 29,
+    "title": "Just below 9-digit all ones number",
+    "tags": ["edge", "long"],
+    "input": "111111110\n",
+    "expected_output": "510",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary just before the largest 9-digit valid number.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 30,
+    "title": "Largest 9-digit integer",
+    "tags": ["edge", "long"],
+    "input": "999999999\n",
+    "expected_output": "511",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a large number with invalid digits. The count is capped by the largest valid number smaller than n (which is 111,111,111).",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 31,
+    "title": "Maximum constraint value n=10^9",
+    "tags": ["max", "edge"],
+    "input": "1000000000\n",
+    "expected_output": "512",
+    "size_bytes": 11,
+    "difficulty_estimate": "hard",
+    "why_included": "Tests the maximum value of n, which itself is a valid number and the only 10-digit valid number in the range.",
+    "time_complexity_trigger": "integer overflow risk"
+  },
+  {
+    "id": 32,
+    "title": "Palindromic large valid number",
+    "tags": ["edge", "long"],
+    "input": "101010101\n",
+    "expected_output": "341",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests another specific large valid number which is also a palindrome to ensure correct counting.",
+    "time_complexity_trigger": "recursion correctness"
+  },
+  {
+    "id": 33,
+    "title": "Just below palindromic valid number",
+    "tags": ["edge", "long"],
+    "input": "101010100\n",
+    "expected_output": "340",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary directly preceding a large palindromic valid number.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 34,
+    "title": "Just above palindromic valid number",
+    "tags": ["edge", "long"],
+    "input": "101010102\n",
+    "expected_output": "341",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the boundary immediately after a large palindromic valid number.",
+    "time_complexity_trigger": "correctness check"
+  },
+  {
+    "id": 35,
+    "title": "Large number with invalid digit prefix",
+    "tags": ["long", "adversarial"],
+    "input": "123456789\n",
+    "expected_output": "511",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a number where no valid number of the same length can exist, so the count is capped by all valid numbers with fewer digits.",
+    "time_complexity_trigger": "correctness check"
+  }
+],
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/9/C",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 13727

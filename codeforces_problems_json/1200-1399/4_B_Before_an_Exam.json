@@ -8,6 +8,438 @@
     "constructive algorithms",
     "greedy"
   ],
+  
+  "problem_name": "B. Before an Exam",
+  "time_limit": "0.5 second",
+  "memory_limit": "64 megabytes",
+  "problem_statement": {
+    "description": "Tomorrow Peter has a Biology exam. He does not like this subject much, but d days ago he learnt that he would have to take this exam. Peter's strict parents made him prepare for the exam immediately, for this purpose he has to study not less than minTimei and not more than maxTimei hours per each i-th day. Moreover, they warned Peter that a day before the exam they would check how he has followed their instructions. So, today is the day when Peter's parents ask him to show the timetable of his preparatory studies. But the boy has counted only the sum of hours sumTime spent on preparation, and now he wants to know if he can show his parents a timetable sсhedule with d numbers, where each number sсhedulei stands for the time in hours spent by Peter each i-th day on biology studies, and satisfying the limitations imposed by his parents, and at the same time the sum total of all schedulei should equal to sumTime."
+  },
+  "input_format": {
+    "description": "The first input line contains two integer numbers d, sumTime — the amount of days Peter studied, and the total amount of hours spent on preparation. Each of the following d lines contains two integer numbers minTimei, maxTimei, separated by a space — the minimum and maximum amount of hours that Peter could have spent on the i-th day."
+  },
+  "output_format": {
+    "description": "If a valid schedule exists, print 'YES' in the first line, followed by a second line containing d space-separated numbers representing the hours spent each day. The sum of these numbers must be equal to sumTime, and each number must be within the min/max time for that day. If no such schedule is possible, print 'NO' in a single line. If there are multiple solutions, any valid solution is acceptable."
+  },
+  "constraints": [
+    "1 ≤ d ≤ 30",
+    "0 ≤ sumTime ≤ 240",
+    "0 ≤ minTimei ≤ maxTimei ≤ 8"
+  ],
+  "sample_cases": [
+    {
+      "input": "2 5\n1 3\n2 4",
+      "output": "YES\n3 2",
+      "explanation": "Peter needs to study a total of 5 hours over 2 days. On day 1, he must study between 1 and 3 hours. On day 2, between 2 and 4 hours. A valid schedule is 3 hours on day 1 and 2 hours on day 2. The total is 3+2=5, and each day's study time is within the allowed range (1≤3≤3 and 2≤2≤4)."
+    },
+    {
+      "input": "2 2\n1 3\n2 4",
+      "output": "NO",
+      "explanation": "The minimum total time Peter must study is the sum of minimums for each day: 1 + 2 = 3 hours. Since the required total sumTime is 2, which is less than the minimum possible, no valid schedule exists."
+    },
+    {
+      "input": "2 8\n1 3\n2 4",
+      "output": "NO",
+      "explanation": "The maximum total time Peter can study is the sum of maximums for each day: 3 + 4 = 7 hours. Since the required total sumTime is 8, which is more than the maximum possible, no valid schedule exists."
+    },
+    {
+    "id": 1,
+    "title": "Sample Case 1: Simple valid schedule",
+    "tags": ["edge"],
+    "input": "2 5\n1 3\n2 4\n",
+    "expected_output": "YES\n3 2\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the first sample case from the problem statement, a basic test for a valid 'YES' scenario.",
+    "time_complexity_trigger": "O(d) solution check"
+  },
+  {
+    "id": 2,
+    "title": "Sample Case 2: Impossible sum, too low",
+    "tags": ["edge"],
+    "input": "2 2\n1 3\n2 4\n",
+    "expected_output": "NO\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the second sample case, testing where sumTime is less than the total minimum possible time.",
+    "time_complexity_trigger": "O(d) solution check"
+  },
+  {
+    "id": 3,
+    "title": "Sample Case 3: Impossible sum, too high",
+    "tags": ["edge"],
+    "input": "2 8\n1 3\n2 4\n",
+    "expected_output": "NO\n",
+    "size_bytes": 12,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the third sample case, testing where sumTime is greater than the total maximum possible time.",
+    "time_complexity_trigger": "O(d) solution check"
+  },
+  {
+    "id": 4,
+    "title": "Minimum days (d=1), valid sum",
+    "tags": ["min"],
+    "input": "1 5\n3 7\n",
+    "expected_output": "YES\n5\n",
+    "size_bytes": 8,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the minimum constraint for the number of days (d=1) with a straightforward valid solution.",
+    "time_complexity_trigger": "Handles single day case"
+  },
+  {
+    "id": 5,
+    "title": "Minimum days (d=1), impossible low sum",
+    "tags": ["min", "edge"],
+    "input": "1 2\n3 7\n",
+    "expected_output": "NO\n",
+    "size_bytes": 8,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the minimum constraint for 'd' where the sum is too low.",
+    "time_complexity_trigger": "Handles single day case"
+  },
+  {
+    "id": 6,
+    "title": "Minimum days (d=1), impossible high sum",
+    "tags": ["min", "edge"],
+    "input": "1 8\n3 7\n",
+    "expected_output": "NO\n",
+    "size_bytes": 8,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the minimum constraint for 'd' where the sum is too high.",
+    "time_complexity_trigger": "Handles single day case"
+  },
+  {
+    "id": 7,
+    "title": "Maximum days and sum, fixed schedule",
+    "tags": ["max", "stress"],
+    "input": "30 240\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n",
+    "expected_output": "YES\n8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8\n",
+    "size_bytes": 127,
+    "difficulty_estimate": "medium",
+    "why_included": "A stress test using the maximum number of days and maximum sumTime where each day has a fixed, maximal time.",
+    "time_complexity_trigger": "Handles max d"
+  },
+  {
+    "id": 8,
+    "title": "Maximum days, sum barely too high",
+    "tags": ["max", "stress", "edge"],
+    "input": "30 240\n0 7\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n",
+    "expected_output": "NO\n",
+    "size_bytes": 127,
+    "difficulty_estimate": "medium",
+    "why_included": "A stress test with max 'd' where sumTime exceeds the total maximum possible time by just one.",
+    "time_complexity_trigger": "Correct sum boundary check"
+  },
+  {
+    "id": 9,
+    "title": "Maximum days, sum barely too low",
+    "tags": ["max", "stress", "edge"],
+    "input": "30 29\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n1 8\n",
+    "expected_output": "NO\n",
+    "size_bytes": 126,
+    "difficulty_estimate": "medium",
+    "why_included": "A stress test with max 'd' where sumTime is less than the total minimum possible time by just one.",
+    "time_complexity_trigger": "Correct sum boundary check"
+  },
+  {
+    "id": 10,
+    "title": "Zero sumTime, all zero-hour days",
+    "tags": ["zero", "edge"],
+    "input": "5 0\n0 0\n0 0\n0 0\n0 0\n0 0\n",
+    "expected_output": "YES\n0 0 0 0 0\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the edge case where the total required time is zero and is achievable only with zero hours each day.",
+    "time_complexity_trigger": "Handles zero sum"
+  },
+  {
+    "id": 11,
+    "title": "Zero sumTime, impossible due to minTime",
+    "tags": ["zero", "edge"],
+    "input": "3 0\n0 2\n1 3\n0 1\n",
+    "expected_output": "NO\n",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the case where sumTime is zero but impossible to achieve because one day has a non-zero minimum time.",
+    "time_complexity_trigger": "Handles zero sum"
+  },
+  {
+    "id": 12,
+    "title": "Zero sumTime, valid with zero minTime",
+    "tags": ["zero", "edge"],
+    "input": "4 0\n0 5\n0 2\n0 8\n0 1\n",
+    "expected_output": "YES\n0 0 0 0\n",
+    "size_bytes": 18,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a valid zero sumTime case where all days allow for zero hours but could have more.",
+    "time_complexity_trigger": "Handles zero sum"
+  },
+  {
+    "id": 13,
+    "title": "Sum equals total minimum time exactly",
+    "tags": ["edge"],
+    "input": "4 10\n1 3\n2 4\n3 5\n4 6\n",
+    "expected_output": "YES\n1 2 3 4\n",
+    "size_bytes": 19,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary case where the required sum is exactly the sum of all minimum times.",
+    "time_complexity_trigger": "Boundary condition check"
+  },
+  {
+    "id": 14,
+    "title": "Sum equals total maximum time exactly",
+    "tags": ["edge"],
+    "input": "4 18\n1 3\n2 4\n3 5\n4 6\n",
+    "expected_output": "YES\n3 4 5 6\n",
+    "size_bytes": 19,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the boundary case where the required sum is exactly the sum of all maximum times.",
+    "time_complexity_trigger": "Boundary condition check"
+  },
+  {
+    "id": 15,
+    "title": "Greedy distribution of extra hours",
+    "tags": ["adversarial"],
+    "input": "5 13\n1 3\n1 4\n2 3\n0 8\n3 3\n",
+    "expected_output": "YES\n3 3 2 2 3\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a standard greedy distribution. The extra hours (13 - sum(mins)=6) must be spread across days.",
+    "time_complexity_trigger": "Correct greedy implementation"
+  },
+  {
+    "id": 16,
+    "title": "All extra hours on first possible day",
+    "tags": ["adversarial"],
+    "input": "5 15\n1 8\n2 2\n3 3\n4 4\n0 0\n",
+    "expected_output": "YES\n5 2 3 4 1\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "medium",
+    "why_included": "An adversarial case for a naive distribution. A greedy algorithm should correctly add the hours. Sum of mins is 10, sumTime is 15. The extra 5 must be handled.",
+    "time_complexity_trigger": "Correct greedy implementation"
+  },
+  {
+    "id": 17,
+    "title": "All days have fixed time, valid",
+    "tags": ["all-equal", "edge"],
+    "input": "3 12\n2 2\n5 5\n5 5\n",
+    "expected_output": "YES\n2 5 5\n",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the case where minTime equals maxTime for all days, making the schedule fixed and easy to validate.",
+    "time_complexity_trigger": "Handles minTime==maxTime"
+  },
+  {
+    "id": 18,
+    "title": "All days have fixed time, invalid",
+    "tags": ["all-equal", "edge"],
+    "input": "3 13\n2 2\n5 5\n5 5\n",
+    "expected_output": "NO\n",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the fixed-schedule case where the required sumTime does not match the only possible sum.",
+    "time_complexity_trigger": "Handles minTime==maxTime"
+  },
+  {
+    "id": 19,
+    "title": "All days have max range (0-8)",
+    "tags": ["max", "random"],
+    "input": "10 40\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n",
+    "expected_output": "YES\n8 8 8 8 8 0 0 0 0 0\n",
+    "size_bytes": 47,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a simple case where every day has the maximum possible flexibility. Total possible time is 0-80.",
+    "time_complexity_trigger": "Correct greedy implementation"
+  },
+  {
+    "id": 20,
+    "title": "Max days (30), minimum sumTime (0)",
+    "tags": ["max", "min", "zero"],
+    "input": "30 0\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n0 1\n",
+    "expected_output": "YES\n0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n",
+    "size_bytes": 125,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the combination of maximum days with minimum sumTime, a valid boundary condition.",
+    "time_complexity_trigger": "Handles max d"
+  },
+  {
+    "id": 21,
+    "title": "Large random valid case 1",
+    "tags": ["random", "stress"],
+    "input": "25 100\n1 5\n2 6\n0 4\n3 8\n4 7\n1 2\n0 1\n5 8\n6 8\n0 3\n2 5\n1 6\n3 7\n4 8\n0 2\n1 3\n2 4\n3 5\n4 6\n5 7\n0 8\n1 7\n2 6\n3 5\n4 4\n",
+    "expected_output": "YES\n5 6 4 8 7 2 1 5 6 0 2 1 3 4 0 1 2 3 4 5 5 1 2 3 4\n",
+    "size_bytes": 129,
+    "difficulty_estimate": "medium",
+    "why_included": "A large, randomly generated but valid case to test the general correctness of the solution. Seed: 123.",
+    "time_complexity_trigger": "O(d) solution"
+  },
+   {
+    "id": 22,
+    "title": "Large random valid case",
+    "tags": ["random", "stress"],
+    "input": "28 150\n0 8\n1 8\n2 8\n3 8\n4 8\n5 8\n6 8\n7 8\n8 8\n0 7\n1 7\n2 7\n3 7\n4 7\n5 7\n6 7\n0 6\n1 6\n2 6\n3 6\n4 6\n5 6\n0 5\n1 5\n2 5\n3 5\n4 5\n0 4\n",
+    "expected_output": "YES\n8 8 8 8 8 8 8 8 8 7 5 2 3 4 5 6 0 1 2 3 4 5 0 1 2 3 4 0\n",
+    "size_bytes": 149,
+    "difficulty_estimate": "medium",
+    "why_included": "A large, randomly generated but valid case to test the general correctness of the solution. Seed: 456.",
+    "time_complexity_trigger": "O(d) solution"
+  },
+  {
+    "id": 23,
+    "title": "Large random invalid case (too low)",
+    "tags": ["random", "stress", "edge"],
+    "input": "27 53\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n2 5\n",
+    "expected_output": "NO\n",
+    "size_bytes": 115,
+    "difficulty_estimate": "medium",
+    "why_included": "A large random case where sumTime is exactly one less than the minimum possible sum, testing boundary checks.",
+    "time_complexity_trigger": "Correct sum boundary check"
+  },
+  {
+    "id": 24,
+    "title": "Large random invalid case (too high)",
+    "tags": ["random", "stress", "edge"],
+    "input": "26 157\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n1 6\n",
+    "expected_output": "NO\n",
+    "size_bytes": 111,
+    "difficulty_estimate": "medium",
+    "why_included": "A large random case where sumTime is exactly one more than the maximum possible sum, testing boundary checks.",
+    "time_complexity_trigger": "Correct sum boundary check"
+  },
+  {
+    "id": 25,
+    "title": "All extra hours pushed to last day",
+    "tags": ["adversarial"],
+    "input": "10 17\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n0 8\n",
+    "expected_output": "YES\n1 1 1 1 1 1 1 1 1 8\n",
+    "size_bytes": 47,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests if the distribution logic works correctly when all available capacity for extra hours is concentrated on the last day.",
+    "time_complexity_trigger": "Correct greedy implementation"
+  },
+  {
+    "id": 26,
+    "title": "All extra hours pushed to first day",
+    "tags": ["adversarial"],
+    "input": "10 17\n0 8\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n1 1\n",
+    "expected_output": "YES\n8 1 1 1 1 1 1 1 1 1\n",
+    "size_bytes": 47,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests if the distribution logic works correctly when all available capacity for extra hours is concentrated on the first day.",
+    "time_complexity_trigger": "Correct greedy implementation"
+  },
+  {
+    "id": 27,
+    "title": "Alternating tight and loose constraints",
+    "tags": ["adversarial"],
+    "input": "6 25\n0 8\n4 4\n0 8\n4 4\n0 8\n4 4\n",
+    "expected_output": "YES\n8 4 5 4 0 4\n",
+    "size_bytes": 31,
+    "difficulty_estimate": "hard",
+    "why_included": "A constructed case with alternating flexibility, requiring the algorithm to distribute extra hours over non-consecutive days.",
+    "time_complexity_trigger": "Correct distribution logic"
+  },
+  {
+    "id": 28,
+    "title": "Sum is one above total minimum",
+    "tags": ["edge"],
+    "input": "10 11\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n",
+    "expected_output": "YES\n2 1 1 1 1 1 1 1 1 1\n",
+    "size_bytes": 47,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the case where only a single extra hour needs to be distributed above the minimum baseline.",
+    "time_complexity_trigger": "Handles small increments"
+  },
+  {
+    "id": 29,
+    "title": "Sawtooth constraints, requires careful distribution",
+    "tags": ["adversarial"],
+    "input": "7 13\n0 1\n1 2\n2 3\n3 4\n2 3\n1 2\n0 1\n",
+    "expected_output": "YES\n1 2 3 4 2 1 0\n",
+    "size_bytes": 35,
+    "difficulty_estimate": "medium",
+    "why_included": "Constraints increase and then decrease, ensuring the greedy distribution fills up capacity sequentially.",
+    "time_complexity_trigger": "Correct greedy implementation"
+  },
+  {
+    "id": 30,
+    "title": "All days can be zero, positive sum",
+    "tags": ["zero"],
+    "input": "15 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n",
+    "expected_output": "YES\n8 0 0 0 0 0 0 0 0 0 0 0 0 0 0\n",
+    "size_bytes": 66,
+    "difficulty_estimate": "easy",
+    "why_included": "A simple case where the sum can be fulfilled entirely by the first day, leaving the rest zero.",
+    "time_complexity_trigger": "Handles zero minTime"
+  },
+  {
+    "id": 31,
+    "title": "Distribution over several flexible days",
+    "tags": ["adversarial"],
+    "input": "5 9\n0 7\n0 7\n0 8\n0 7\n0 7\n",
+    "expected_output": "YES\n7 2 0 0 0\n",
+    "size_bytes": 26,
+    "difficulty_estimate": "medium",
+    "why_included": "The total sum to add (9) exceeds the capacity of the first day (7), forcing the algorithm to continue distributing to the next day.",
+    "time_complexity_trigger": "Correctly carries over remaining time"
+  },
+  {
+    "id": 32,
+    "title": "Sum requires taking a little from many days",
+    "tags": ["stress"],
+    "input": "20 30\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n1 2\n",
+    "expected_output": "YES\n2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1\n",
+    "size_bytes": 86,
+    "difficulty_estimate": "medium",
+    "why_included": "A case where the extra time must be distributed evenly across many days, each taking a small increment.",
+    "time_complexity_trigger": "Correct loop for distribution"
+  },
+  {
+    "id": 33,
+    "title": "One day with large minTime, sum matches",
+    "tags": ["edge"],
+    "input": "5 8\n0 1\n0 1\n8 8\n0 1\n0 1\n",
+    "expected_output": "YES\n0 0 8 0 0\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a case where one day's minimum requirement dictates the entire sum, making the solution fixed.",
+    "time_complexity_trigger": "Handles sum == totalMin"
+  },
+  {
+    "id": 34,
+    "title": "One day with large minTime, impossible sum",
+    "tags": ["edge"],
+    "input": "5 7\n0 1\n0 1\n8 8\n0 1\n0 1\n",
+    "expected_output": "NO\n",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "Similar to the previous case, but the sumTime is less than the mandatory minimum time of one day.",
+    "time_complexity_trigger": "Handles sum < totalMin"
+  },
+  {
+    "id": 35,
+    "title": "Max days and sum, mixed minTime",
+    "tags": ["max", "stress"],
+    "input": "30 240\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n8 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n0 8\n",
+    "expected_output": "YES\n8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8 8\n",
+    "size_bytes": 127,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests max constraints where sumTime matches totalMax, requiring all days to be at their maximum, despite varying minTimes.",
+    "time_complexity_trigger": "Handles sum == totalMax"
+  },
+  {
+    "id": 36,
+    "title": "Max days, impossible due to high minTimes",
+    "tags": ["max", "stress", "adversarial"],
+    "input": "30 100\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n4 8\n",
+    "expected_output": "NO\n",
+    "size_bytes": 127,
+    "difficulty_estimate": "easy",
+    "why_included": "A stress test with max days where the total sum is impossible because the minimum required time (30*4=120) exceeds the target sumTime (100).",
+    "time_complexity_trigger": "Correct initial sum check"
+  }
+],
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/4/B",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 27494

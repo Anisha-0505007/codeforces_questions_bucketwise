@@ -9,6 +9,340 @@
     "geometry",
     "implementation"
   ],
+  
+  "problem_name": "Running Student",
+  "description": "A student is on a bus moving along the positive x-axis at a constant speed `vb`. The bus starts at (0,0) and makes `n` stops at coordinates `(xi, 0)`. The student needs to reach a university located at `(xu, yu)` and can run at a constant speed `vs`. The goal is to find the optimal bus stop to get off at (from the 2nd to the nth) to minimize the total travel time. Total time is the bus travel time to the stop plus the student's running time from the stop to the university. If times are equal, choose the stop closer to the university.",
+  "constraints": {
+    "time_limit": "1 second",
+    "memory_limit": "64 megabytes",
+    "n": "2 <= n <= 100",
+    "vb_vs": "1 <= vb, vs <= 1000",
+    "stop_coordinates_x": "0 <= xi <= 10^5, x1 is guaranteed to be 0.",
+    "university_coordinates": "|xu|, |yu| <= 10^5"
+  },
+  "input_spec": {
+    "line_1": "Three space-separated integers: `n` (number of stops), `vb` (bus speed), `vs` (student speed).",
+    "line_2": "`n` space-separated non-negative integers in ascending order: x-coordinates of the bus stops.",
+    "line_3": "Two space-separated integers: `xu`, `yu` (coordinates of the university)."
+  },
+  "output_spec": {
+    "description": "A single integer: the index (1-based) of the optimal bus stop to get off at."
+  },
+  "notes": [
+    "The student cannot get off at the first bus stop (index 1).",
+    "Time to get to stop `i` is `xi / vb`.",
+    "Time to run from stop `i` is `sqrt((xu-xi)^2 + yu^2) / vs`.",
+    "The tie-breaking rule is to choose the bus stop with the minimum Euclidean distance to the university."
+  ],
+  "examples": [
+    {
+      "input": "4 5 2\n0 2 4 6\n4 1",
+      "output": "3"
+    },
+    {
+      "input": "2 1 1\n0 100000\n100000 100000",
+      "output": "2"
+    },
+    {
+    "id": 1,
+    "title": "Problem Example 1",
+    "tags": ["trivial", "short"],
+    "input": "4 5 2\n0 2 4 6\n4 1\n",
+    "expected_output": "3",
+    "size_bytes": 18,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the first example from the problem statement, a basic case where the optimal stop is in the middle.",
+    "time_complexity_trigger": "basic loop"
+  },
+  {
+    "id": 2,
+    "title": "Problem Example 2",
+    "tags": ["trivial", "max"],
+    "input": "2 1 1\n0 100000\n100000 100000\n",
+    "expected_output": "2",
+    "size_bytes": 29,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the second example, which also tests maximum coordinate values and the minimum number of stops.",
+    "time_complexity_trigger": "basic loop"
+  },
+  {
+    "id": 3,
+    "title": "Minimum Number of Stops (n=2)",
+    "tags": ["min", "edge"],
+    "input": "2 10 10\n0 100\n50 50\n",
+    "expected_output": "2",
+    "size_bytes": 19,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the minimum `n` constraint. With only two stops, the only possible choice is the second stop.",
+    "time_complexity_trigger": "loop bounds check"
+  },
+  {
+    "id": 4,
+    "title": "Maximum Number of Stops (n=100)",
+    "tags": ["max", "stress"],
+    "input": "100 10 3\n0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98\n90 5\n",
+    "expected_output": "92",
+    "size_bytes": 296,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests the maximum `n` constraint. Requires iterating through all possible stops.",
+    "time_complexity_trigger": "O(n) check"
+  },
+  {
+    "id": 5,
+    "title": "University Directly Above a Bus Stop",
+    "tags": ["edge"],
+    "input": "5 10 2\n0 10 20 30 40\n20 50\n",
+    "expected_output": "4",
+    "size_bytes": 24,
+    "difficulty_estimate": "easy",
+    "why_included": "The university's x-coordinate matches a bus stop's coordinate. The optimal stop is likely near this point.",
+    "time_complexity_trigger": "distance calculation"
+  },
+  {
+    "id": 6,
+    "title": "University on Bus Route (y=0)",
+    "tags": ["edge", "zero"],
+    "input": "5 10 2\n0 10 20 30 40\n30 0\n",
+    "expected_output": "4",
+    "size_bytes": 23,
+    "difficulty_estimate": "easy",
+    "why_included": "A special case where the university lies on the same line as the bus stops, simplifying distance calculations.",
+    "time_complexity_trigger": "sqrt(x*x) check"
+  },
+  {
+    "id": 7,
+    "title": "Bus Much Faster Than Student",
+    "tags": ["edge"],
+    "input": "10 1000 1\n0 100 200 300 400 500 600 700 800 900\n1000 1000\n",
+    "expected_output": "10",
+    "size_bytes": 56,
+    "difficulty_estimate": "easy",
+    "why_included": "When the bus is extremely fast, it's almost always optimal to stay on until the last stop.",
+    "time_complexity_trigger": "minimization logic"
+  },
+  {
+    "id": 8,
+    "title": "Student Much Faster Than Bus",
+    "tags": ["edge"],
+    "input": "10 1 1000\n0 1000 2000 3000 4000 5000 6000 7000 8000 9000\n10000 1\n",
+    "expected_output": "2",
+    "size_bytes": 62,
+    "difficulty_estimate": "easy",
+    "why_included": "When the student is extremely fast, it's almost always optimal to get off at the first possible stop (stop 2).",
+    "time_complexity_trigger": "minimization logic"
+  },
+  {
+    "id": 9,
+    "title": "Tie-Breaker Case with Equal Times",
+    "tags": ["edge", "precision"],
+    "input": "4 1 1\n0 2 4 6\n4 0\n",
+    "expected_output": "3",
+    "size_bytes": 15,
+    "difficulty_estimate": "medium",
+    "why_included": "A specifically constructed case where two stops yield identical travel times. The tie must be broken by choosing the stop closer to the university.",
+    "time_complexity_trigger": "tie-breaker logic"
+  },
+  {
+    "id": 10,
+    "title": "University at a Negative X-Coordinate",
+    "tags": ["negative"],
+    "input": "5 5 5\n0 10 20 30 40\n-50 100\n",
+    "expected_output": "2",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests handling of negative university coordinates. The student should get off early as the bus moves away from the university.",
+    "time_complexity_trigger": "coordinate handling"
+  },
+   {
+    "id": 11,
+    "title": "University Far Away (Large Y)",
+    "tags": ["max", "precision"],
+    "input": "10 10 10\n0 10 20 30 40 50 60 70 80 90\n50 100000\n",
+    "expected_output": "2",
+    "size_bytes": 45,
+    "difficulty_estimate": "medium",
+    "why_included": "When the university is very far vertically, the x-component of the running distance becomes less important, but the bus travel time still accumulates. This tests if the logic correctly balances these factors.",
+    "time_complexity_trigger": "minimization logic"
+  },
+  {
+    "id": 12,
+    "title": "Floating Point Precision Test",
+    "tags": ["precision", "edge", "adversarial"],
+    "input": "4 1000 999\n0 50000 50001 100000\n50001 1\n",
+    "expected_output": "2",
+    "size_bytes": 38,
+    "difficulty_estimate": "hard",
+    "why_included": "This case is designed so that the total times for stops 2 and 3 are very close, requiring accurate floating-point arithmetic to distinguish the minimum.",
+    "time_complexity_trigger": "precision loss"
+  },
+  {
+    "id": 13,
+    "title": "University at Negative Y Coordinate",
+    "tags": ["negative"],
+    "input": "5 10 2\n0 10 20 30 40\n20 -50\n",
+    "expected_output": "4",
+    "size_bytes": 25,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests handling of negative university coordinates. The result should be symmetric with a positive y-coordinate due to the distance formula using y^2.",
+    "time_complexity_trigger": "coordinate handling"
+  },
+  {
+    "id": 14,
+    "title": "University at Origin (0,0)",
+    "tags": ["zero", "edge"],
+    "input": "5 100 100\n0 10 20 30 40\n0 0\n",
+    "expected_output": "2",
+    "size_bytes": 23,
+    "difficulty_estimate": "easy",
+    "why_included": "The student starts at the university. Since they must take the bus and can't get off at stop 1, the optimal choice is to get off at the very next stop (index 2) to minimize travel time.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 15,
+    "title": "Clear Tie-Breaker by Distance",
+    "tags": ["edge", "precision", "adversarial"],
+    "input": "4 1 1\n0 10 20 30\n25 0\n",
+    "expected_output": "3",
+    "size_bytes": 18,
+    "difficulty_estimate": "medium",
+    "why_included": "A constructed case where stops 2 and 3 result in the exact same total travel time. The tie must be broken by choosing the stop physically closer to the university (stop 3).",
+    "time_complexity_trigger": "tie-breaker logic"
+  },
+  {
+    "id": 16,
+    "title": "All Constraints at Maximum Values",
+    "tags": ["max", "stress"],
+    "input": "100 1000 1000\n0 1010 2020 3030 4040 5050 6060 7070 8080 9090 10101 11111 12121 13131 14141 15151 16161 17171 18181 19191 20202 21212 22222 23232 24242 25252 26262 27272 28282 29292 30303 31313 32323 33333 34343 35353 36363 37373 38383 39393 40404 41414 42424 43434 44444 45454 46464 47474 48484 49494 50505 51515 52525 53535 54545 55555 56565 57575 58585 59595 60606 61616 62626 63636 64646 65656 66666 67676 68686 69696 70707 71717 72727 73737 74747 75757 76767 77777 78787 79797 80808 81818 82828 83838 84848 85858 86868 87878 88888 89898 90909 91919 92929 93939 94949 95959 96969 97979 98989 99999\n100000 100000\n",
+    "expected_output": "71",
+    "size_bytes": 625,
+    "difficulty_estimate": "hard",
+    "why_included": "A stress test using maximum allowed values for n, speeds, and coordinates to check for performance and potential overflow with large numbers.",
+    "time_complexity_trigger": "large value calculations"
+  },
+  {
+    "id": 17,
+    "title": "Minimum Speeds (vb=1, vs=1)",
+    "tags": ["min", "edge"],
+    "input": "5 1 1\n0 10 20 30 40\n25 10\n",
+    "expected_output": "3",
+    "size_bytes": 20,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests with the slowest possible speeds, making travel times large. The logic should be to minimize `x_i + distance`.",
+    "time_complexity_trigger": "minimization logic"
+  },
+  {
+    "id": 18,
+    "title": "University Far Past the Last Stop",
+    "tags": ["edge"],
+    "input": "5 10 5\n0 10 20 30 40\n100000 100\n",
+    "expected_output": "5",
+    "size_bytes": 26,
+    "difficulty_estimate": "easy",
+    "why_included": "When the university's x-coordinate is far beyond the last bus stop, the optimal strategy is always to take the bus to the very end.",
+    "time_complexity_trigger": "boundary choice logic"
+  },
+  {
+    "id": 19,
+    "title": "University Between First and Second Stops",
+    "tags": ["edge"],
+    "input": "10 100 1\n0 100 200 300 400 500 600 700 800 900\n50 100\n",
+    "expected_output": "2",
+    "size_bytes": 55,
+    "difficulty_estimate": "easy",
+    "why_included": "When the university is located before the second possible stop, the best choice must be that second stop to minimize backtracking.",
+    "time_complexity_trigger": "boundary choice logic"
+  },
+  {
+    "id": 20,
+    "title": "Precision Test with Small Y Value",
+    "tags": ["precision", "edge"],
+    "input": "5 20 19\n0 100 200 300 400\n200 1\n",
+    "expected_output": "3",
+    "size_bytes": 25,
+    "difficulty_estimate": "medium",
+    "why_included": "When `y_u` is very small, the running distance is almost horizontal. This creates very small differences in total time for stops near `x_u`, testing floating point precision.",
+    "time_complexity_trigger": "precision loss"
+  },
+  {
+    "id": 21,
+    "title": "Densely Packed Bus Stops",
+    "tags": ["stress", "precision"],
+    "input": "10 5 2\n0 10 11 12 13 14 30 40 50 60\n13 5\n",
+    "expected_output": "5",
+    "size_bytes": 35,
+    "difficulty_estimate": "medium",
+    "why_included": "With stops very close to each other, the change in total time is minimal between them. This tests the algorithm's ability to find the true minimum among very similar values.",
+    "time_complexity_trigger": "floating point comparison"
+  },
+  {
+    "id": 22,
+    "title": "Sparsely Packed Bus Stops",
+    "tags": ["edge"],
+    "input": "4 10 10\n0 50000 90000 100000\n80000 20000\n",
+    "expected_output": "3",
+    "size_bytes": 37,
+    "difficulty_estimate": "easy",
+    "why_included": "With large gaps between stops, the optimal choice is usually more distinct and easier to find, serving as a sanity check.",
+    "time_complexity_trigger": "general logic"
+  },
+  {
+    "id": 23,
+    "title": "All Coordinates Negative (Except Stops)",
+    "tags": ["negative"],
+    "input": "5 5 5\n0 10 20 30 40\n-50 -100\n",
+    "expected_output": "2",
+    "size_bytes": 23,
+    "difficulty_estimate": "easy",
+    "why_included": "Ensures correct handling of negative coordinates for the university, which should be functionally identical to positive coordinates due to squaring in the distance formula.",
+    "time_complexity_trigger": "coordinate handling"
+  },
+  {
+    "id": 24,
+    "title": "Optimal Stop is Second-to-Last",
+    "tags": ["edge"],
+    "input": "10 5 3\n0 10 20 30 40 50 60 70 80 90\n75 5\n",
+    "expected_output": "9",
+    "size_bytes": 39,
+    "difficulty_estimate": "easy",
+    "why_included": "A general case to ensure the loop logic is correct and doesn't have an off-by-one error when the optimum is near the end of the route.",
+    "time_complexity_trigger": "loop bounds check"
+  },
+  {
+    "id": 25,
+    "title": "University at Large Negative X",
+    "tags": ["max", "negative"],
+    "input": "10 100 100\n0 100 200 300 400 500 600 700 800 900\n-100000 100000\n",
+    "expected_output": "2",
+    "size_bytes": 67,
+    "difficulty_estimate": "easy",
+    "why_included": "The bus moves in the positive x direction, away from the university. The student must get off at the first opportunity (stop 2).",
+    "time_complexity_trigger": "monotonic function"
+  },
+  {
+    "id": 26,
+    "title": "University at Large Positive X",
+    "tags": ["max"],
+    "input": "10 100 100\n0 100 200 300 400 500 600 700 800 900\n100000 100000\n",
+    "expected_output": "10",
+    "size_bytes": 66,
+    "difficulty_estimate": "easy",
+    "why_included": "The university is far ahead on the route. The student should stay on the bus as long as possible to cover the large horizontal distance.",
+    "time_complexity_trigger": "monotonic function"
+  },
+  {
+    "id": 27,
+    "title": "Equal Bus and Student Speeds",
+    "tags": ["edge"],
+    "input": "10 123 123\n0 100 200 300 400 500 600 700 800 900\n900 1\n",
+    "expected_output": "10",
+    "size_bytes": 55,
+    "difficulty_estimate": "medium",
+    "why_included": "A special case where `vb == vs`. The function to minimize is proportional to `x_i + sqrt((xu-xi)^2 + yu^2)`. This tests the handling of this specific mathematical form.",
+    "time_complexity_trigger": "mathematical insight"
+  }
+],
+  
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/9/B",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 5887
