@@ -7,6 +7,416 @@
   "tags": [
     "strings"
   ],
+  
+  "problem_name": "Train and Peter",
+  "description": "During a train trip from city A to B, Peter wakes up twice. He records two non-overlapping, chronological sequences of flag colors he sees at stations. Given the complete sequence of flags from A to B and Peter's two recorded sequences, determine if his observations are possible on the forward trip (A->B), the backward trip (B->A, which is the A->B sequence reversed), both, or neither.",
+  "constraints": {
+    "time_limit": "1 second",
+    "memory_limit": "64 megabytes",
+    "full_sequence_length": "up to 100,000",
+    "observed_sequence_length": "up to 100"
+  },
+  "input_spec": {
+    "line_1": "String: The full sequence of flag colors from A to B.",
+    "line_2": "String: The first sequence Peter observed.",
+    "line_3": "String: The second sequence Peter observed."
+  },
+  "output_spec": {
+    "description": "Output a single word indicating the validity of Peter's story:",
+    "options": {
+      "forward": "Possible only on the A to B trip.",
+      "backward": "Possible only on the B to A trip.",
+      "both": "Possible on both trips.",
+      "fantasy": "Not possible on either trip."
+    }
+  },
+  "examples": [
+    {
+      "input": "atob\na\nb",
+      "output": "forward"
+    },
+    {
+      "input": "aaacaaa\naca\naa",
+      "output": "both"
+    },
+    {
+    "id": 1,
+    "title": "Problem Example 1: Simple Forward Case",
+    "tags": ["short"],
+    "input": "atob\na\nb\n",
+    "expected_output": "forward",
+    "size_bytes": 8,
+    "difficulty_estimate": "trivial",
+    "why_included": "This is the first example from the problem statement, testing the most basic 'forward' scenario.",
+    "time_complexity_trigger": "basic string search"
+  },
+  {
+    "id": 2,
+    "title": "Problem Example 2: Simple Both Case on Palindrome",
+    "tags": ["short", "duplicates"],
+    "input": "aaacaaa\naca\naa\n",
+    "expected_output": "both",
+    "size_bytes": 14,
+    "difficulty_estimate": "easy",
+    "why_included": "This is the second example from the problem statement, testing a 'both' scenario where the main string is a palindrome.",
+    "time_complexity_trigger": "basic string search"
+  },
+  {
+    "id": 3,
+    "title": "Simple Backward Case",
+    "tags": ["short", "reverse"],
+    "input": "zyxw\nw\ny\n",
+    "expected_output": "backward",
+    "size_bytes": 8,
+    "difficulty_estimate": "trivial",
+    "why_included": "A minimal, non-palindromic string where the sequences only appear in the correct order on the backward journey.",
+    "time_complexity_trigger": "string reversal and search"
+  },
+  {
+    "id": 4,
+    "title": "Simple Fantasy Case with Missing Substrings",
+    "tags": ["short"],
+    "input": "abacaba\nx\ny\n",
+    "expected_output": "fantasy",
+    "size_bytes": 11,
+    "difficulty_estimate": "trivial",
+    "why_included": "A basic case where neither of the two required sequences are present in the main string.",
+    "time_complexity_trigger": "basic string search"
+  },
+  {
+    "id": 5,
+    "title": "Fantasy Case: Substrings Present in Wrong Order",
+    "tags": ["short", "edge", "adversarial"],
+    "input": "peterpan\npan\npeter\n",
+    "expected_output": "fantasy",
+    "size_bytes": 17,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests that the first sequence must appear chronologically before the second. Both substrings are present, but not in the required order.",
+    "time_complexity_trigger": "search order validation"
+  },
+  {
+    "id": 6,
+    "title": "Both Case on a Non-Palindromic String",
+    "tags": ["duplicates", "long"],
+    "input": "findmehere_erehemadnif\nfind\nhere\n",
+    "expected_output": "both",
+    "size_bytes": 33,
+    "difficulty_estimate": "medium",
+    "why_included": "Demonstrates a 'both' result on a non-palindromic string, requiring checks on both the original and its reverse.",
+    "time_complexity_trigger": "multiple search passes"
+  },
+  {
+    "id": 7,
+    "title": "Identical Subsequences, Adjacent",
+    "tags": ["short", "duplicates", "edge"],
+    "input": "abab\nab\nab\n",
+    "expected_output": "forward",
+    "size_bytes": 9,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests when the two required sequences are identical and appear back-to-back, requiring careful indexing in the search.",
+    "time_complexity_trigger": "search offset logic"
+  },
+  {
+    "id": 8,
+    "title": "Identical Subsequences, Insufficient Space",
+    "tags": ["short", "duplicates", "edge"],
+    "input": "aba\nab\nab\n",
+    "expected_output": "fantasy",
+    "size_bytes": 8,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests an edge case where a match for the first sequence is found, but there's not enough remaining string for the second identical sequence.",
+    "time_complexity_trigger": "boundary check"
+  },
+  {
+    "id": 9,
+    "title": "Minimal Forward Case",
+    "tags": ["min", "edge"],
+    "input": "ab\na\nb\n",
+    "expected_output": "forward",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "The smallest possible input that results in 'forward'.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 10,
+    "title": "Minimal Both Case",
+    "tags": ["min", "edge"],
+    "input": "aba\na\nb\n",
+    "expected_output": "both",
+    "size_bytes": 7,
+    "difficulty_estimate": "easy",
+    "why_included": "The smallest possible input that results in 'both', using a palindrome.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 11,
+    "title": "Minimal Backward Case",
+    "tags": ["min", "edge", "reverse"],
+    "input": "ba\na\nb\n",
+    "expected_output": "backward",
+    "size_bytes": 6,
+    "difficulty_estimate": "easy",
+    "why_included": "The smallest possible input that results in 'backward'.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 12,
+    "title": "Minimal Fantasy Case",
+    "tags": ["min", "edge"],
+    "input": "a\na\na\n",
+    "expected_output": "fantasy",
+    "size_bytes": 6,
+    "difficulty_estimate": "trivial",
+    "why_included": "The smallest possible input that results in 'fantasy'.",
+    "time_complexity_trigger": "base case logic"
+  },
+  {
+    "id": 13,
+    "title": "Greedy First Match is Correct",
+    "tags": ["medium", "adversarial"],
+    "input": "abracadabra\nabra\ncada\n",
+    "expected_output": "forward",
+    "size_bytes": 22,
+    "difficulty_estimate": "easy",
+    "why_included": "This case confirms that finding the first occurrence of the first substring and then searching is the correct strategy. There are multiple 'abra's.",
+    "time_complexity_trigger": "greedy search confirmation"
+  },
+  {
+    "id": 14,
+    "title": "Fantasy due to Overlapping Substrings",
+    "tags": ["edge", "adversarial"],
+    "input": "ababa\naba\nbab\n",
+    "expected_output": "fantasy",
+    "size_bytes": 11,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests that the second substring must begin strictly after the first one ends. A naive find might succeed, but chronological order makes it impossible.",
+    "time_complexity_trigger": "non-overlapping check"
+  },
+  
+  {
+    "id": 15,
+    "title": "Main String of All Same Characters",
+    "tags": ["all-equal", "duplicates"],
+    "input": "aaaaaaaaaa\naaa\naaaaa\n",
+    "expected_output": "both",
+    "size_bytes": 20,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a simple case on a monotonous string. It works in both directions because the string is a palindrome.",
+    "time_complexity_trigger": "handles simple repetition"
+  },
+  {
+    "id": 16,
+    "title": "All Same Characters, Fantasy",
+    "tags": ["all-equal", "duplicates", "edge"],
+    "input": "aaaaa\naaa\naaa\n",
+    "expected_output": "fantasy",
+    "size_bytes": 12,
+    "difficulty_estimate": "easy",
+    "why_included": "Tests a case where there isn't enough space for two non-overlapping instances of the same substring.",
+    "time_complexity_trigger": "boundary check"
+  },
+  {
+    "id": 17,
+    "title": "Forward OK, Backward has Patterns in Wrong Order",
+    "tags": ["medium", "adversarial"],
+    "input": "part1_data_part2\npart1\npart2\n",
+    "expected_output": "forward",
+    "size_bytes": 29,
+    "difficulty_estimate": "medium",
+    "why_included": "A constructed case where both patterns are present in both directions, but only in the correct chronological order in the forward direction.",
+    "time_complexity_trigger": "search order validation"
+  },
+  {
+    "id": 18,
+    "title": "One Pattern is a Prefix of the Other",
+    "tags": ["edge"],
+    "input": "ababcde\nab\nabab\n",
+    "expected_output": "forward",
+    "size_bytes": 14,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests edge case where one search pattern is a prefix of the other, which could confuse naive implementations.",
+    "time_complexity_trigger": "overlapping pattern logic"
+  },
+  {
+    "id": 19,
+    "title": "First Substring Not Found",
+    "tags": ["short"],
+    "input": "abcdefg\nxyz\ncde\n",
+    "expected_output": "fantasy",
+    "size_bytes": 15,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the case where the second substring is present but the first is not, which must result in fantasy.",
+    "time_complexity_trigger": "early exit check"
+  },
+  {
+    "id": 20,
+    "title": "Second Substring Not Found",
+    "tags": ["short"],
+    "input": "abcdefg\nabc\nxyz\n",
+    "expected_output": "fantasy",
+    "size_bytes": 15,
+    "difficulty_estimate": "trivial",
+    "why_included": "Tests the case where the first substring is present but the second is not, which must result in fantasy.",
+    "time_complexity_trigger": "second stage search fail"
+  },
+  {
+    "id": 21,
+    "title": "Full String is the Concatenation of Patterns",
+    "tags": ["edge"],
+    "input": "helloworld\nhello\nworld\n",
+    "expected_output": "forward",
+    "size_bytes": 23,
+    "difficulty_estimate": "easy",
+    "why_included": "A simple case where the main string is just the two patterns joined together.",
+    "time_complexity_trigger": "basic concatenation"
+  },
+  {
+    "id": 22,
+    "title": "Max Length Patterns at Opposite Ends of Max Length String",
+    "tags": ["max", "stress"],
+    "input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n",
+    "expected_output": "fantasy",
+    "size_bytes": 100204,
+    "difficulty_estimate": "hard",
+    "why_included": "This is constructed from P1, a long gap of 'c's, and P2. The gap prevents finding P2 after P1. The key is that the input strings are different. P1 is at the start of S, but the required P2 is not present at all. It tests performance on max-length inputs. The provided input has S=a...ab...b, P1=a...a, P2=b...b. Forward fails because P2 does not come after P1. Backward fails because the order is wrong.",
+    "time_complexity_trigger": "efficient string search"
+  },
+  {
+    "id": 23,
+    "title": "Max Length Patterns, Touching in Max Length String",
+    "tags": ["max", "stress"],
+    "input": "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbdddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd\naaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n",
+    "expected_output": "forward",
+    "size_bytes": 100204,
+    "difficulty_estimate": "hard",
+    "why_included": "Tests performance with max-length inputs where the patterns are adjacent and embedded within a much larger string.",
+    "time_complexity_trigger": "efficient string search"
+  },
+  {
+    "id": 24,
+    "title": "Stress Test with Long Repeated Patterns",
+    "tags": ["stress", "pathological"],
+    "input": "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab\nabababababababababababababababababababababababababababababababababababababababababababababababab\nabababababababababababababababababababababababababababababababababababababababababababababababab\n",
+    "expected_output": "forward",
+    "size_bytes": 498,
+    "difficulty_estimate": "hard",
+    "why_included": "Uses highly repetitive, periodic strings. This is a pathological case for naive string searching algorithms and tests the efficiency of the underlying implementation (e.g., KMP, Boyer-Moore).",
+    "time_complexity_trigger": "O(n*m) TLE"
+  },
+  {
+    "id": 25,
+    "title": "Large Random String, Forward Case",
+    "tags": ["random", "stress"],
+    "input": "pqlrvystartqpsdfantasyfgbackwardbothfantasyqponmldonotfindmeeverlmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyend\nstart\nend\n",
+    "expected_output": "forward",
+    "size_bytes": 113,
+    "difficulty_estimate": "medium",
+    "why_included": "A general test case with random characters surrounding the two patterns to ensure they can be found in a noisy environment. Seed: 123.",
+    "time_complexity_trigger": "general performance"
+  },
+  {
+    "id": 26,
+    "title": "Large Random String, Backward Case",
+    "tags": ["random", "stress", "reverse"],
+    "input": "pqlrvyendqpsdfantasyfgbackwardbothfantasyqponmldonotfindmeeverlmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzstart\nstart\nend\n",
+    "expected_output": "backward",
+    "size_bytes": 114,
+    "difficulty_estimate": "medium",
+    "why_included": "A general test case with random characters where the patterns appear in the correct chronological order only on the backward trip. Seed: 456.",
+    "time_complexity_trigger": "general performance"
+  },
+  {
+    "id": 27,
+    "title": "Large Random String, Both Case",
+    "tags": ["random", "stress", "duplicates"],
+    "input": "abcfindmeherexyzzyxerehemenifcba\nfindme\nhere\n",
+    "expected_output": "both",
+    "size_bytes": 41,
+    "difficulty_estimate": "medium",
+    "why_included": "A palindromic string constructed with random-like parts, ensuring the condition holds for both forward and backward directions. Seed: 789.",
+    "time_complexity_trigger": "general performance"
+  },
+  
+  {
+    "id": 28,
+    "title": "Large Random String, Fantasy Case",
+    "tags": ["random", "stress"],
+    "input": "mnbvcxzlkjhgfdsapoiuytrewqlaksjdhfgmxnwoeirutyzxcvbnmlkjhgfdsaqwertyuioplkjhgfdsazxcvbnmnbvcxzpoiuytr\none\ntwo\n",
+    "expected_output": "fantasy",
+    "size_bytes": 120,
+    "difficulty_estimate": "medium",
+    "why_included": "A general test case with random characters where the patterns do not appear in the correct chronological order in either direction. Seed: 1337.",
+    "time_complexity_trigger": "general performance"
+  },
+  {
+    "id": 29,
+    "title": "Forward OK, Backward has Patterns in Wrong Order",
+    "tags": ["medium", "adversarial"],
+    "input": "peter_piper\npeter\npiper\n",
+    "expected_output": "forward",
+    "size_bytes": 24,
+    "difficulty_estimate": "medium",
+    "why_included": "A constructed case where both patterns are present in both directions, but only in the correct chronological order in the forward direction. The reversed string contains 'piper' before 'peter'.",
+    "time_complexity_trigger": "search order validation"
+  },
+  {
+    "id": 30,
+    "title": "Palindromic Patterns Creating Forward-Only Case",
+    "tags": ["edge", "medium"],
+    "input": "level_and_radar\nlevel\nradar\n",
+    "expected_output": "forward",
+    "size_bytes": 28,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a case where both patterns are palindromes. In the reversed string, 'radar' appears before 'level', making the backward journey impossible, isolating the 'forward' result.",
+    "time_complexity_trigger": "reverse logic check"
+  },
+  {
+    "id": 31,
+    "title": "Overlapping Search Patterns Test",
+    "tags": ["edge", "duplicates"],
+    "input": "ababa\naba\nba\n",
+    "expected_output": "both",
+    "size_bytes": 10,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests the search logic with overlapping patterns. The first 'aba' (index 0) is found, and 'ba' is correctly found after it (index 3). The main string is a palindrome, so it works both ways.",
+    "time_complexity_trigger": "search offset logic"
+  },
+  {
+    "id": 32,
+    "title": "Complex Palindrome Resulting in 'Both'",
+    "tags": ["duplicates", "medium"],
+    "input": "abacdcaba\naba\ncdc\n",
+    "expected_output": "both",
+    "size_bytes": 17,
+    "difficulty_estimate": "easy",
+    "why_included": "A non-trivial palindromic string where the patterns can be found correctly in both directions, confirming the symmetry of the checking logic.",
+    "time_complexity_trigger": "string reversal and search"
+  },
+  {
+    "id": 33,
+    "title": "One Pattern is a Substring of the Other",
+    "tags": ["edge", "adversarial"],
+    "input": "abcdefg\nbc\nbcd\n",
+    "expected_output": "fantasy",
+    "size_bytes": 14,
+    "difficulty_estimate": "medium",
+    "why_included": "Tests a tricky case where one pattern is a substring of the other. The first pattern is found, but the second does not appear *after* it, leading to a 'fantasy' result.",
+    "time_complexity_trigger": "non-overlapping check"
+  },
+  {
+    "id": 34,
+    "title": "Constructed Tricky Backward-Only Case",
+    "tags": ["reverse", "adversarial"],
+    "input": "owt_pag_eno\none\ntwo\n",
+    "expected_output": "backward",
+    "size_bytes": 19,
+    "difficulty_estimate": "medium",
+    "why_included": "This string is the reverse of 'one_gap_two'. The forward search fails, but the backward search (on the reversed string) finds 'one' then 'two' in the correct order.",
+    "time_complexity_trigger": "reverse logic check"
+  }
+],
+
   "problem_statement_link": "https://codeforces.com/problemset/problem/8/A",
   "scraped_at": "2025-09-06 12:49:59 UTC",
   "solved_count": 6293
